@@ -1,5 +1,7 @@
 import time
+import datetime
 import twitter
+import forecast
 from flask import Flask, request, jsonify, make_response
 app = Flask(__name__)
 
@@ -22,6 +24,21 @@ def tweet_search():
 	radius = request.args.get('rad')
 	
 	results = api.find_tweets(query, lat, lon, radius)
+	return make_response(jsonify(results), 404)
+
+# Test urls:
+# http://localhost:5000/forecast?lat=42.3595760&lon=-71.1020130
+# http://localhost:5000/forecast?lat=42.3595760&lon=-71.1020130&time=1385024400
+@app.route('/forecast', methods=['GET'])
+def forecast_search():
+	forecaster = forecast.ForecastIO()
+
+	lat = request.args.get('lat')
+	lon = request.args.get('lon')
+	time = request.args.get('time')
+	
+	results = forecaster.get_current_forecast(lat, lon, time)
+
 	return make_response(jsonify(results), 404)
 	
 @app.errorhandler(404)

@@ -1,7 +1,10 @@
 Installation
 ----
-1. `sudo pip install flask`
-2. `sudo pip install twython`
-3. `python server.py`
+1. Install Dependencies
+    - `sudo pip install flask`
+    - `sudo pip install twython`
+    - `sudo pip install python-forecastio`
+2. Update twitter.py and forecast.py with API keys from Google Doc
+3. Run server with `python server.py`
 
 
