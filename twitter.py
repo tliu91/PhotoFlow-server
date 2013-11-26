@@ -3,9 +3,9 @@ from twython import Twython
 class Twitter:
 	ACCESS_TOKEN = ''
 
-	def __init__(self):
-		self.app_key = 'SEE GOOGLE DOC'
-		self.app_secret = 'SEE GOOGLE DOC'
+	def __init__(self, app_key, app_secret):
+		self.app_key = app_key
+		self.app_secret = app_secret
 
 		self.client = self.authenticate()
 
