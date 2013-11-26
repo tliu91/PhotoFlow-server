@@ -1,0 +1,13 @@
+# Flask settings
+DEBUG = True
+
+# Twitter API
+TWITTER_API_KEY		= ''
+TWITTER_API_SECRET	= ''
+
+# Flickr API
+FLICKR_API_KEY		= ''
+FLICKR_API_SECRET	= ''
+
+# Forcast.IO API
+FORECASTIO_API_KEY	= ''
