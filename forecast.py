@@ -23,9 +23,8 @@ class ForecastIO:
 		return results
 
 	def timestamp_to_datetime(self, time):
-		if time is not None:
-			time = int(time)
-			return datetime.datetime.fromtimestamp(time)
+		time = int(time)
+		return datetime.datetime.fromtimestamp(time)
 
 
 
