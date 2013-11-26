@@ -11,7 +11,7 @@ def streams():
 	latitude = request.args.get('lat')
 	longitude = request.args.get('long')
 	timestamp = request.args.get('timestamp')
-	return make_response(jsonify({ 'lat': latitude, 'long': longitude }), 404)
+	return make_response(jsonify({ 'lat': latitude, 'long': longitude }))
 
 # Here's a test url:
 # http://localhost:5000/search?lat=42.3595760&lon=-71.1020130&rad=2&q=MIT
@@ -25,7 +25,7 @@ def tweet_search():
 	radius = request.args.get('rad')
 
 	results = api.find_tweets(query, lat, lon, radius)
-	return make_response(jsonify(results), 404)
+	return make_response(jsonify(results))
 
 # Test urls:
 # http://localhost:5000/forecast?lat=42.3595760&lon=-71.1020130
@@ -40,7 +40,7 @@ def forecast_search():
 
 	results = forecaster.get_current_forecast(lat, lon, time)
 
-	return make_response(jsonify(results), 404)
+	return make_response(jsonify(results))
 
 @app.errorhandler(404)
 def not_found(error):
