@@ -2,6 +2,7 @@ import time
 import datetime
 import twitter
 import forecast
+import geocoder
 from flask import Flask, request, jsonify, make_response
 app = Flask(__name__)
 app.config.from_object('config')
@@ -42,6 +43,29 @@ def forecast_search():
 
 	return make_response(jsonify(results))
 
+@app.route('/geocode', methods=['GET'])
+def geocode():
+	coder = geocoder.Geocoder()
+
+	lat = request.args.get('lat')
+	lon = request.args.get('lon')
+	address = request.args.get('address')
+
+	if not lat and not lon and not address:
+		return make_response(jsonify({'error' : 'No arguments provided'}), 500)
+		
+
+	latlng = None
+	if lat and lon:
+		latlng = lat + "," + lon
+
+	result = coder.lookup(address, latlng)
+
+	return make_response(jsonify(result))
+
+
+
+	
 @app.errorhandler(404)
 def not_found(error):
   	return make_response(jsonify({ 'error': 'Not found' }), 404)
