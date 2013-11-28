@@ -27,18 +27,21 @@ def get_all_photos()
 		puts "*"*60
 		puts "*"*60
 
+		filename = "#{city[:name]}_data.txt"
+		file = File.open(filename, "w")
+
+
 		(starting_year..ending_year).each do |year|
 			12.times do |month| 
 				month += 1
 				start_date = Date.new(year, month, 1)
 				end_date = Date.new(year, month, -1)	
 				
-				filename = "#{city[:name]}_data.txt"
-				file = File.open(filename, "w")
 				get_photos(city[:lat], city[:lon], start_date, end_date, file)
 			end
 		end
 
+		file.close unless file == nil
 	end
 end
 
@@ -94,8 +97,6 @@ def get_photos(lat, lon, start_date, end_date, file)
 
 		puts flickr_urls.length
 	end
-
-	file.close unless file == nil
 end
 
 def construct_photo_url(dict)
