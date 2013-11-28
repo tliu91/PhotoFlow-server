@@ -7,7 +7,7 @@ require 'date'
 @base_url = 'http://api.flickr.com/services/rest/'
 
 def get_all_photos()
-	cities = [ 	{:name => 'Los Angeles', :lat => 34.098159, :lon => -118.243532}, 
+	cities = [ 	{:name => 'LosAngeles', :lat => 34.098159, :lon => -118.243532}, 
 				{:name => 'Houston', :lat => 29.787025, :lon => -95.369782}, 
 				{:name => 'Washington, D.C', :lat => 38.918819, :lon => -77.036927},
 				{:name => 'Chicago', :lat => 41.902277, :lon => -87.634034},
@@ -32,8 +32,10 @@ def get_all_photos()
 				month += 1
 				start_date = Date.new(year, month, 1)
 				end_date = Date.new(year, month, -1)	
-
-				get_photos(city[:lat], city[:lon], start_date, end_date)
+				
+				filename = "#{city[:name]}_data.txt"
+				file = File.open(filename, "w")
+				get_photos(city[:lat], city[:lon], start_date, end_date, file)
 			end
 		end
 
@@ -43,12 +45,13 @@ end
 
 
 
-def get_photos(lat, lon, start_date, end_date)
+def get_photos(lat, lon, start_date, end_date, file)
 	puts "-"*60
 	puts "-"*60
 	puts "-----Getting photos between #{start_date} and #{end_date}"
 	puts "-"*60
 	puts "-"*60
+	file.write("#{start_date}, #{end_date}\n")
 
 	method = 'flickr.photos.search'
 	format = 'json'
@@ -82,14 +85,17 @@ def get_photos(lat, lon, start_date, end_date)
 		photos = parsed["photos"]["photo"]
 
 		flickr_urls = []
-
+	
 		photos.each do |dict|
 			photo_url = construct_photo_url(dict)
+			file.write("#{photo_url}\n")
 			flickr_urls << photo_url
 		end
 
 		puts flickr_urls.length
 	end
+
+	file.close unless file == nil
 end
 
 def construct_photo_url(dict)
