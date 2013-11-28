@@ -68,7 +68,16 @@ def get_photos(lat, lon, start_date, end_date)
 		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=500&lat=#{lat}&lon=#{lon}"
 		url = "#{@base_url}#{query}"
 
-		results = RestClient.get(url)
+		begin
+			results = RestClient.get(url)
+		rescue => e
+			puts e.response
+			puts "!"*100
+			puts "EXCEPTION for page #{page+1} for month #{start_date}"
+			puts "!"*100
+			next
+		end
+
 		parsed = JSON.parse(results)
 		photos = parsed["photos"]["photo"]
 
