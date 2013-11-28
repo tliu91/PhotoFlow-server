@@ -63,7 +63,7 @@ def get_photos(lat, lon, start_date, end_date)
 
 	max_page.times do |page|
 
-		puts page + 1
+		puts "Page #{page + 1}"
 
 		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=500&lat=#{lat}&lon=#{lon}"
 		url = "#{@base_url}#{query}"
@@ -88,7 +88,7 @@ def get_photos(lat, lon, start_date, end_date)
 			flickr_urls << photo_url
 		end
 
-		puts flickr_urls
+		puts flickr_urls.length
 	end
 end
 
