@@ -6,21 +6,37 @@ require 'date'
 
 @base_url = 'http://api.flickr.com/services/rest/'
 
-def get_all_photos(lat, lon)
+def get_all_photos()
+	cities = [ 	{:name => 'Los Angeles', :lat => 34.098159, :lon => -118.243532}, 
+				{:name => 'Houston', :lat => 29.787025, :lon => -95.369782}, 
+				{:name => 'Washington, D.C' :lat => 38.918819, :lon => -77.036927},
+				{:name => 'Chicago', :lat => 41.902277, :lon => -87.634034},
+				{:name => 'Minneapolis', :lat => 44.995397, :lon => -93.265107},
+				{:name => 'Seattle' :lat => 44.995397, :lon => -93.265107}
+	]
+
 	starting_year = 2011
 	ending_year = 2013
-	month = 10
 
-	(starting_year..ending_year).each do |year|
-		start_date = Date.new(year, month, 1)
-		end_date = Date.new(year, month, -1)
 
-		get_photos(lat, lon, start_date, end_date)
+	cities.each do |city|
 
-		month += 1
-		if month > 12
-			month = 1
+		puts "*"*60
+		puts "*"*60
+		puts "----CITY: #{city[:name]}"
+		puts "*"*60
+		puts "*"*60
+
+		(starting_year..ending_year).each do |year|
+			12.times do |month| 
+				month += 1
+				start_date = Date.new(year, month, 1)
+				end_date = Date.new(year, month, -1)	
+
+				get_photos(city[:lat], city[:lon], start_date, end_date)
+			end
 		end
+
 	end
 end
 
@@ -36,7 +52,7 @@ def get_photos(lat, lon, start_date, end_date)
 
 	method = 'flickr.photos.search'
 	format = 'json'
-	api_key = 'SEE GOOGLE DOC'
+	api_key = '28698c60ea6da45e56e1b991cce417b3'
 
 	min_taken_date = start_date
 	max_taken_date = end_date
@@ -46,6 +62,8 @@ def get_photos(lat, lon, start_date, end_date)
 	max_page = 10
 
 	max_page.times do |page|
+
+		puts page + 1
 
 		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=500&lat=#{lat}&lon=#{lon}"
 		url = "#{@base_url}#{query}"
@@ -79,4 +97,4 @@ end
 
 
 # Boston: 42.372242,-71.060364
-get_all_photos(42.372242, -71.060364)
+get_all_photos()
