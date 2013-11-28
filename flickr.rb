@@ -9,10 +9,10 @@ require 'date'
 def get_all_photos()
 	cities = [ 	{:name => 'Los Angeles', :lat => 34.098159, :lon => -118.243532}, 
 				{:name => 'Houston', :lat => 29.787025, :lon => -95.369782}, 
-				{:name => 'Washington, D.C' :lat => 38.918819, :lon => -77.036927},
+				{:name => 'Washington, D.C', :lat => 38.918819, :lon => -77.036927},
 				{:name => 'Chicago', :lat => 41.902277, :lon => -87.634034},
 				{:name => 'Minneapolis', :lat => 44.995397, :lon => -93.265107},
-				{:name => 'Seattle' :lat => 44.995397, :lon => -93.265107}
+				{:name => 'Seattle', :lat => 44.995397, :lon => -93.265107}
 	]
 
 	starting_year = 2011
