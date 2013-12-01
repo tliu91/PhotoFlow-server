@@ -79,6 +79,7 @@ def get_photos(city, start_date, end_date, file, bbox = false)
 
 		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=#{per_page}#{geo}"
 		url = "#{@base_url}#{query}"
+		puts url
 
 		begin
 			results = RestClient.get(url)
