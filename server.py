@@ -3,6 +3,7 @@ import datetime
 import twitter
 import forecast
 import geocoder
+import flickr
 from flask import Flask, request, jsonify, make_response
 app = Flask(__name__)
 app.config.from_object('config')
@@ -63,9 +64,19 @@ def geocode():
 
 	return make_response(jsonify(result))
 
+# Test urls:
+# http://localhost:5000/flickr?lat=42.3595760&lon=-71.1020130
+@app.route('/flickr', methods=['GET'])
+def flickr_search():
+	api = flickr.Flickr(app.config['FLICKR_API_KEY'], app.config['FLICKR_API_SECRET'])
 
+	lat = request.args.get('lat')
+	lon = request.args.get('lon')
+	time = request.args.get('time')
+	results = api.find_photos(lat, lon, time)
 
-	
+	return make_response(jsonify(results))
+
 @app.errorhandler(404)
 def not_found(error):
   	return make_response(jsonify({ 'error': 'Not found' }), 404)
