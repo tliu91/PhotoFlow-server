@@ -6,29 +6,30 @@ require 'date'
 
 @base_url = 'http://api.flickr.com/services/rest/'
 
-def get_all_photos()
-	cities = [
-		{:name => 'LA', :lat => 34.098159, :lon => -118.243532},
-		{:name => 'Houston', :lat => 29.787025, :lon => -95.369782},
-		{:name => 'DC', :lat => 38.918819, :lon => -77.036927},
-		{:name => 'Chicago', :lat => 41.902277, :lon => -87.634034},
-		{:name => 'Minneapolis', :lat => 44.995397, :lon => -93.265107},
-		{:name => 'Seattle', :lat => 44.995397, :lon => -93.265107},
-		{:name => 'Boston', :lat => 42.372242, :lon => -71.060364}
-	]
+def get_all_photos(bbox = false)
+	cities = {
+		:la           => { :lat => 34.098159, :lon => -118.243532, :ne_lat => 34.33926,  :ne_lon => -117.929466, :sw_lat => 33.694679, :sw_lon => -118.723549 },
+		:houston      => { :lat => 29.787025, :lon => -95.369782,  :ne_lat => 30.236691, :ne_lon => -94.943367,  :sw_lat => 29.39027,  :sw_lon => -95.893944 },
+		:dc           => { :lat => 38.918819, :lon => -77.036927,  :ne_lat => 39.00375,  :ne_lon => -76.904503,  :sw_lat => 38.799461, :sw_lon => -77.147057 },
+		:chicago      => { :lat => 41.902277, :lon => -87.634034,  :ne_lat => 42.07436,  :ne_lon => -87.397217,  :sw_lat => 41.624851, :sw_lon => 87.968437 },
+		:seattle      => { :lat => 44.995397, :lon => -93.265107,  :ne_lat => 47.745071, :ne_lon => -122.176193, :sw_lat => 47.422359, :sw_lon => -122.472153 },
+		:boston       => { :lat => 42.372242, :lon => -71.060364,  :ne_lat => 42.397259, :ne_lon => -70.923042,  :sw_lat => 42.227859, :sw_lon => -71.191208 },
+		:minneapolis  => { :lat => 44.995397, :lon => -93.265107,  :ne_lat => 45.051281, :ne_lon => -93.193741,  :sw_lat => 44.89024,  :sw_lon => -93.329147 },
+	}
 
 	starting_year = 2011
 	ending_year = 2013
 
-	cities.each do |city|
+	cities.each do |name, city|
 
 		puts "*"*60
 		puts "*"*60
-		puts "----CITY: #{city[:name]}"
+		puts "----CITY: #{name}"
 		puts "*"*60
 		puts "*"*60
 
-		filename = "data/#{city[:name]}_data.txt"
+		folder = bbox ? "lat-long-bbox" : "lat-long-exact"
+		filename = "data/#{folder}/#{name}_data.txt"
 		file = File.open(filename, "w")
 
 		(starting_year..ending_year).each do |year|
@@ -37,7 +38,7 @@ def get_all_photos()
 				start_date = Date.new(year, month, 1)
 				end_date = Date.new(year, month, -1)
 
-				get_photos(city[:lat], city[:lon], start_date, end_date, file)
+				get_photos(city, start_date, end_date, file)
 			end
 		end
 
@@ -45,7 +46,16 @@ def get_all_photos()
 	end
 end
 
-def get_photos(lat, lon, start_date, end_date, file)
+def get_photos(city, start_date, end_date, file, bbox = false)
+
+	if bbox
+		lat = city[:lat]
+		lon = city[:lon]
+		geo = "&lat=#{lat}&lon=#{lon}"
+	else
+		geo = "&bbox=#{city[:sw_lon]},#{city[:sw_lat]},#{city[:ne_lon]},#{city[:ne_lat]}"
+	end
+
 	puts "-"*60
 	puts "-"*60
 	puts "-----Getting photos between #{start_date} and #{end_date}"
@@ -60,15 +70,14 @@ def get_photos(lat, lon, start_date, end_date, file)
 	min_taken_date = start_date
 	max_taken_date = end_date
 
-	per_page = 500 # for geospatial queries, this does nothing as those requests are limited to 250 per page
-
+	per_page = 250 # for geospatial queries, this does nothing as those requests are limited to 250 per page
 	max_page = 10
 
 	max_page.times do |page|
 
 		puts "Page #{page + 1}"
 
-		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=#{per_page}&lat=#{lat}&lon=#{lon}"
+		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=#{per_page}#{geo}"
 		url = "#{@base_url}#{query}"
 
 		begin
@@ -105,4 +114,4 @@ def construct_photo_url(dict)
 	return "http://farm#{farm}.staticflickr.com/#{server}/#{id}_#{secret}.jpg"
 end
 
-get_all_photos()
+get_all_photos(true)
