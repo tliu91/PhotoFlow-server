@@ -7,17 +7,18 @@ require 'date'
 @base_url = 'http://api.flickr.com/services/rest/'
 
 def get_all_photos()
-	cities = [ 	{:name => 'LosAngeles', :lat => 34.098159, :lon => -118.243532}, 
-				{:name => 'Houston', :lat => 29.787025, :lon => -95.369782}, 
-				{:name => 'Washington, D.C', :lat => 38.918819, :lon => -77.036927},
-				{:name => 'Chicago', :lat => 41.902277, :lon => -87.634034},
-				{:name => 'Minneapolis', :lat => 44.995397, :lon => -93.265107},
-				{:name => 'Seattle', :lat => 44.995397, :lon => -93.265107}
+	cities = [
+		{:name => 'LA', :lat => 34.098159, :lon => -118.243532},
+		{:name => 'Houston', :lat => 29.787025, :lon => -95.369782},
+		{:name => 'DC', :lat => 38.918819, :lon => -77.036927},
+		{:name => 'Chicago', :lat => 41.902277, :lon => -87.634034},
+		{:name => 'Minneapolis', :lat => 44.995397, :lon => -93.265107},
+		{:name => 'Seattle', :lat => 44.995397, :lon => -93.265107},
+		{:name => 'Boston', :lat => 42.372242, :lon => -71.060364}
 	]
 
 	starting_year = 2011
 	ending_year = 2013
-
 
 	cities.each do |city|
 
@@ -27,16 +28,15 @@ def get_all_photos()
 		puts "*"*60
 		puts "*"*60
 
-		filename = "#{city[:name]}_data.txt"
+		filename = "data/#{city[:name]}_data.txt"
 		file = File.open(filename, "w")
 
-
 		(starting_year..ending_year).each do |year|
-			12.times do |month| 
+			12.times do |month|
 				month += 1
 				start_date = Date.new(year, month, 1)
-				end_date = Date.new(year, month, -1)	
-				
+				end_date = Date.new(year, month, -1)
+
 				get_photos(city[:lat], city[:lon], start_date, end_date, file)
 			end
 		end
@@ -44,9 +44,6 @@ def get_all_photos()
 		file.close unless file == nil
 	end
 end
-
-
-
 
 def get_photos(lat, lon, start_date, end_date, file)
 	puts "-"*60
@@ -71,7 +68,7 @@ def get_photos(lat, lon, start_date, end_date, file)
 
 		puts "Page #{page + 1}"
 
-		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=500&lat=#{lat}&lon=#{lon}"
+		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=#{per_page}&lat=#{lat}&lon=#{lon}"
 		url = "#{@base_url}#{query}"
 
 		begin
@@ -88,7 +85,7 @@ def get_photos(lat, lon, start_date, end_date, file)
 		photos = parsed["photos"]["photo"]
 
 		flickr_urls = []
-	
+
 		photos.each do |dict|
 			photo_url = construct_photo_url(dict)
 			file.write("#{photo_url}\n")
@@ -108,9 +105,4 @@ def construct_photo_url(dict)
 	return "http://farm#{farm}.staticflickr.com/#{server}/#{id}_#{secret}.jpg"
 end
 
-
-
-
-
-# Boston: 42.372242,-71.060364
 get_all_photos()
