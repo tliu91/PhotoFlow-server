@@ -3,3 +3,4 @@
 # Ignore config file
 config.py
 images
+imageanalysis/test
