@@ -16,8 +16,7 @@ end
 
 start_date = ''
 end_date = ''
-last_seen = 'http://farm1.staticflickr.com/999/5802898551_0000000001.jpg'
-seen_last = false
+seen_last = true # HACK: set to false if you want to skip until last_filename is scanned
 
 File.open("#{base_folder}/#{folder}/#{city}_data.txt", 'r').each_line do |line|
 	unless /^http/.match(line)
@@ -30,7 +29,7 @@ File.open("#{base_folder}/#{folder}/#{city}_data.txt", 'r').each_line do |line|
 		create_dir(dir)
 
 		filename = /[A-Za-z\d_]+\.jpg/.match(line)[0]
-		last_filename = /[A-Za-z\d_]+\.jpg/.match(last_seen)[0]
+		last_filename = '8857329604_a11fcedac7.jpg' 
 		if filename.eql? last_filename
 			seen_last = true
 		end
@@ -40,6 +39,8 @@ File.open("#{base_folder}/#{folder}/#{city}_data.txt", 'r').each_line do |line|
 		    begin	
 		      fo.write(open(line).read)
 		    rescue RuntimeError => e
+		      next
+		    rescue OpenURI::HTTPError
 		      next
 	 	    end
 		  end
