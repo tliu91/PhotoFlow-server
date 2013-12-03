@@ -70,19 +70,6 @@ class ColorAnalyzer
 		self.aggregate_colors(color_histogram)
 	end
 
-	###
-	# Given a hue, in degrees, returns the closest reference hue
-	# based on the W3 HSL table 
-	# (http://www.w3.org/TR/css3-color/#hsl-color)
-	###
-	def closest_reference_hues(hue)
-		@aggregate.each do |hue, val|
-
-		end
-		return (hue / 30).round * 30
-	end
-
-
 end
 
 
