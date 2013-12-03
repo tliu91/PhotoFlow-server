@@ -1,4 +1,5 @@
 require 'RMagick'
+require 'optparse'
 
 class ColorAnalyzer
 
@@ -25,16 +26,15 @@ class ColorAnalyzer
 			hue = hue.round # Round the hue for looser aggregation
 
 			# Calculate a reference hue for a simple percentage calculation
+			# Note: 360 deg == 0 deg == 'red'
 			reference_hue = (hue / 30).round * 30
-			# 360 deg. == 0 deg. == 'red'
 			reference_hue = reference_hue == 360 ? 0 : reference_hue 
 
 			isWhite = light >= 0.99
 			isBlack = light <= 0.01
 
-			# Avoid pure white and black colors 
-			# when calculating aggregate frequency
-			# for we want a more colorful output
+			# Avoid pure white and black colors when calculating
+			# aggregate frequency for a more colorful output
 			unless isWhite || isBlack
 				if @aggregate[hue] != nil
 					@aggregate[hue][:total_light] += light
@@ -60,7 +60,7 @@ class ColorAnalyzer
 	end
 
 	###
-	# Loads a new image into a running aggregate
+	# Loads a new image into the running aggregate
 	###
 	def aggregate_image(image)
 		# For faster processing, we reduce the image to @num_colors 
@@ -77,6 +77,39 @@ def loadImage(image_path)
 	# We're only reading single-frame images so always get the first one
 	return Magick::Image.read(image_path).first
 end
+
+
+if __FILE__ == $PROGRAM_NAME
+	options = {}
+
+	optparse = OptionParser.new do|opts|
+		# Set a banner, displayed at the top
+		# of the help screen.
+		opts.banner = "Usage: analyzer.rb [options] dir"
+
+		# This displays the help screen, all programs are
+		# assumed to have this option.
+		opts.on( '-h', '--help', 'Display this screen' ) do
+			puts opts
+			exit
+		end
+	end
+
+	optparse.parse
+	dir = ARGV[0]
+	if dir == nil
+		puts "gimme some arguments"
+		exit
+	else
+		Dir.glob("#{dir}/**/*.jpg").each do |f| 
+			if File.file?(f)
+				puts f
+			end
+		end
+	end
+end
+
+
 
 
 
