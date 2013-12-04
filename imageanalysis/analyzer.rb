@@ -1,3 +1,5 @@
+#! /usr/bin/env ruby
+
 require 'RMagick'
 require 'optparse'
 
@@ -17,7 +19,7 @@ class ColorAnalyzer
 
 	###
 	# Given a histogram of colors to frequencies, adds to a running aggregate
-	# of the frequency of specific colors, in terms of HLSA hue
+	# of the frequency of specific colors, in HLSA
 	###
 	def aggregate_colors(color_histogram)
 		color_histogram.each do |pixel, count|
@@ -84,16 +86,17 @@ end
 if __FILE__ == $PROGRAM_NAME
 	options = {}
 
-	optparse = OptionParser.new do|opts|
-		# Set a banner, displayed at the top of the help screen.
-		opts.banner = "Usage: analyzer.rb [options] dir"
+	optparse = OptionParser.new do |opts|
+		opts.banner = "Usage: analyzer.rb [options] --dir"
 
 		opts.on( '-v', '--verbose', 'Output reference and full aggregates' ) do
      		options[:verbose] = true
    		end
 
-		# This displays the help screen, all programs are
-		# assumed to have this option.
+   		opts.on( '-d', '--dir STR', 'Top-level directory containing sub-directories of images', 'e.g. the city directory') do |dir|
+   			options[:dir] = dir
+   		end
+
 		opts.on( '-h', '--help', 'Display this screen' ) do
 			puts opts
 			exit
@@ -101,27 +104,43 @@ if __FILE__ == $PROGRAM_NAME
 	end
 
 	optparse.parse!
-	dir = ARGV[0]
+	dir = options[:dir]
 
-	if dir == nil
+	if dir.nil?
+		puts "Missing: required switch --dir"
+		puts optparse
 		exit
 	else
-		analyzer = ColorAnalyzer.new(1280)
-		Dir.glob("#{dir}/**/*.jpg").each do |f| 
-			if File.file?(f)
-				x += 1
-				image = loadImage(f)
-				analyzer.aggregate_image(image)
+		month_dirs = Dir.glob("#{dir}/**").map { |f| f[/\d{4}-\d{2}-\d{2}/] }
+
+		month_dirs.each do |month|
+			puts "Processing images for #{month}"
+			analyzer = ColorAnalyzer.new(1280)
+			images = Dir.glob("#{dir}/#{month}/*.jpg")
+			processed = 0
+
+			images.each do |f|
+				if File.file?(f) && File.size?(f)
+					image = loadImage(f)
+					analyzer.aggregate_image(image)					
+				end	
+
+				processed += 1
+				progress = ((processed / images.length.to_f) * 100).to_i
+
+				print "\r#{progress}%"
 			end
+
+			if options[:verbose]
+				puts analyzer.aggregate
+				puts "="*100
+				puts analyzer.reference_aggregate
+			end
+
+			# TODO: Output aggregate results to file
+
+			puts "\n"
 		end
-
-		if options[:verbose]
-			puts analyzer.aggregate
-			puts "="*100
-			puts analyzer.reference_aggregate
-		end
-
-
 
 	end
 end
