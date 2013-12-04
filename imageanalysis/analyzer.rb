@@ -100,6 +100,10 @@ if __FILE__ == $PROGRAM_NAME
    			options[:output] = dir
    		end
 
+   		opts.on( '-s', '--sample-size N', 'Sample N percent of images. NOTE: Right now only gets first N percent') do |n|
+   			options[:sample] = n.to_i
+   		end
+
    		opts.on( '-v', '--verbose', 'Output reference and full aggregates' ) do
      		options[:verbose] = true
    		end
@@ -123,7 +127,6 @@ if __FILE__ == $PROGRAM_NAME
 		unless File.directory?(out)
 			FileUtils.mkdir_p(out)
 		end
-		puts "Output can be found at #{File.expand_path(out)}"
 
 		month_dirs = Dir.glob("#{dir}/**").map { |f| f[/\d{4}-\d{2}-\d{2}/] }
 
@@ -141,12 +144,12 @@ if __FILE__ == $PROGRAM_NAME
 
 				processed += 1
 				progress = ((processed / images.length.to_f) * 100).to_i
+				print "\r#{progress}%"
 
-				if progress >= 10
+				sample = options[:sample]
+				if sample != nil && progress >= sample
 					break
 				end
-
-				print "\r#{progress}%"
 			end
 
 			if options[:verbose]
@@ -171,6 +174,8 @@ if __FILE__ == $PROGRAM_NAME
 
 			puts "\n"
 		end
+
+		puts "Output can be found at #{File.expand_path(out)}"
 
 	end
 end
