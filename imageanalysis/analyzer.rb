@@ -15,8 +15,8 @@ class ColorAnalyzer
 	def initialize(num_colors, colorspace=Magick::HSLColorspace) 
 		@num_colors = num_colors
 		@colorspace = colorspace
-		@aggregate = {}
-		@reference_aggregate = {}
+		@aggregate = {:hues => {}, :total_hue_count => 0}
+		@reference_aggregate = {:hues => {}, :total_hue_count => 0}
 	end
 
 	###
@@ -43,12 +43,12 @@ class ColorAnalyzer
 			# Avoid pure white and black colors when calculating
 			# aggregate frequency for a more colorful output
 			unless isWhite || isBlack
-				if @aggregate[hue] != nil
-					@aggregate[hue][:total_light] += light
-					@aggregate[hue][:total_sat] += sat
-					@aggregate[hue][:count] += count
+				if @aggregate[:hues][hue] != nil
+					@aggregate[:hues][hue][:total_light] += light
+					@aggregate[:hues][hue][:total_sat] += sat
+					@aggregate[:hues][hue][:count] += count
 				else 
-					@aggregate[hue] = {
+					@aggregate[:hues][hue] = {
 						:total_light => light, 
 						:total_sat => sat, 
 						:count => count
@@ -57,12 +57,16 @@ class ColorAnalyzer
 			end
 
 			# Keep track of reference hues for a simple percentage calculation
-			if @reference_aggregate[reference_hue] != nil
-				@reference_aggregate[reference_hue] += 1
+			if @reference_aggregate[:hues][reference_hue] != nil
+				@reference_aggregate[:hues][reference_hue] += count
 			else
-				@reference_aggregate[reference_hue] = 1
+				@reference_aggregate[:hues][reference_hue] = count
 			end
 		end
+
+		@aggregate[:total_hue_count] = total_hue_count()
+		@reference_aggregate[:total_hue_count] = total_ref_count()
+
 	end
 
 	###
@@ -75,6 +79,24 @@ class ColorAnalyzer
 		color_histogram = quantized_image.color_histogram
 
 		self.aggregate_colors(color_histogram)
+	end
+
+	def total_hue_count
+		total_hue_count = 0
+		@aggregate[:hues].each do |hue, info|
+			total_hue_count += info[:count]
+		end
+
+		return total_hue_count
+	end
+
+	def total_ref_count
+		total_hue_count = 0
+		@reference_aggregate[:hues].each do |hue, count|
+			total_hue_count += count
+		end
+
+		return total_hue_count
 	end
 
 end
@@ -92,11 +114,11 @@ if __FILE__ == $PROGRAM_NAME
 	optparse = OptionParser.new do |opts|
 		opts.banner = "Usage: analyzer.rb [options] --dir DIRECTORY -o OUTPUT_DIR"
 
-   		opts.on( '-d', '--dir STR', 'Top-level directory containing sub-directories of images', 'e.g. the city directory') do |dir|
+   		opts.on( '-d', '--dir DIRECTORY', 'Top-level directory containing sub-directories of images', 'e.g. the city directory') do |dir|
    			options[:dir] = dir
    		end
 
-   		opts.on( '-o', '--output STR', 'Output directory') do |dir|
+   		opts.on( '-o', '--output OUTPUT_DIR', 'Output directory') do |dir|
    			options[:output] = dir
    		end
 
@@ -166,7 +188,7 @@ if __FILE__ == $PROGRAM_NAME
 
 				output = {
 					:aggregate => analyzer.aggregate, 
-					:ref_aggregate => analyzer.reference_aggregate
+					:ref_aggregate => analyzer.reference_aggregate 
 				}
 
 				JSON.dump(output, f)
