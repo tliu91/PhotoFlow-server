@@ -2,6 +2,8 @@
 
 require 'RMagick'
 require 'optparse'
+require 'json'
+require 'fileutils'
 
 class ColorAnalyzer
 	attr_accessor :aggregate, :reference_aggregate
@@ -28,6 +30,7 @@ class ColorAnalyzer
 			# Saturation and lightness are between 0 and 255.
 			hue, sat, light = pixel.to_hsla 
 			hue = hue.round # Round the hue for looser aggregation
+			hue = hue == 360 ? 0 : hue
 
 			# Calculate a reference hue for a simple percentage calculation
 			# Note: 360 deg == 0 deg == 'red'
@@ -87,14 +90,18 @@ if __FILE__ == $PROGRAM_NAME
 	options = {}
 
 	optparse = OptionParser.new do |opts|
-		opts.banner = "Usage: analyzer.rb [options] --dir"
-
-		opts.on( '-v', '--verbose', 'Output reference and full aggregates' ) do
-     		options[:verbose] = true
-   		end
+		opts.banner = "Usage: analyzer.rb [options] --dir DIRECTORY -o OUTPUT_DIR"
 
    		opts.on( '-d', '--dir STR', 'Top-level directory containing sub-directories of images', 'e.g. the city directory') do |dir|
    			options[:dir] = dir
+   		end
+
+   		opts.on( '-o', '--output STR', 'Output directory') do |dir|
+   			options[:output] = dir
+   		end
+
+   		opts.on( '-v', '--verbose', 'Output reference and full aggregates' ) do
+     		options[:verbose] = true
    		end
 
 		opts.on( '-h', '--help', 'Display this screen' ) do
@@ -105,12 +112,19 @@ if __FILE__ == $PROGRAM_NAME
 
 	optparse.parse!
 	dir = options[:dir]
+	out = options[:output]
 
-	if dir.nil?
-		puts "Missing: required switch --dir"
+	if dir.nil? || out.nil?
+		puts "Missing either directory or output file switch"
 		puts optparse
 		exit
 	else
+
+		unless File.directory?(out)
+			FileUtils.mkdir_p(out)
+		end
+		puts "Output can be found at #{File.expand_path(out)}"
+
 		month_dirs = Dir.glob("#{dir}/**").map { |f| f[/\d{4}-\d{2}-\d{2}/] }
 
 		month_dirs.each do |month|
@@ -128,16 +142,32 @@ if __FILE__ == $PROGRAM_NAME
 				processed += 1
 				progress = ((processed / images.length.to_f) * 100).to_i
 
+				if progress >= 10
+					break
+				end
+
 				print "\r#{progress}%"
 			end
 
 			if options[:verbose]
-				puts analyzer.aggregate
-				puts "="*100
-				puts analyzer.reference_aggregate
+				puts "===Aggregate==="
+				puts JSON.pretty_generate(analyzer.aggregate)
+				puts "===Reference Aggregate==="
+				puts JSON.pretty_generate(analyzer.reference_aggregate)
 			end
 
-			# TODO: Output aggregate results to file
+			relative_path = "#{out}/#{month}.json"
+			path = File.expand_path(relative_path)
+
+			File.open(path, 'w') do |f|
+
+				output = {
+					:aggregate => analyzer.aggregate, 
+					:ref_aggregate => analyzer.reference_aggregate
+				}
+
+				JSON.dump(output, f)
+			end
 
 			puts "\n"
 		end
