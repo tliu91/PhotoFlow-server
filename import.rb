@@ -86,6 +86,12 @@ File.open("#{base_folder}/#{folder}/#{city}_data.txt", 'r').each_line do |line|
 	else
 		url = /(.*).jpg/.match(line)[0]
 		photo = deconstruct_photo_url(url)
+
+		if coll.find('id' => photo[:id]).count() >= 1
+			puts photo[:id] + ' already exists'
+			next
+		end
+
 		geo = get_photo_geo(photo[:id])
 
 		begin
