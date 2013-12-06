@@ -7,7 +7,7 @@ require 'json'
 
 options = {}
 optparser = OptionParser.new do |opt|
-	opt.banner = "Usage: download.rb city [options]"
+	opt.banner = "Usage: import.rb city [options]"
 
 	options[:exact] = false
 	opt.on("-e", "--exact", "use exact lat/long, default to bounding box") do
