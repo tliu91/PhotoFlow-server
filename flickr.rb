@@ -4,7 +4,33 @@ require 'rest_client'
 require 'json'
 require 'date'
 
+require 'optparse'
+
+@options = {}
+optparser = OptionParser.new do |opt|
+	opt.banner = "Usage: flickr.rb [options]"
+
+	@options[:dryrun] = false
+	opt.on("-d", "--dryrun", "run without persisting data") do
+		@options[:dryrun] = true
+	end
+
+	@options[:exact] = false
+	opt.on("-e", "--exact", "use exact lat/long, default to bounding box") do
+		@options[:exact] = true
+	end
+
+	opt.on("-h", "--help", "help") do
+		puts optparser
+		exit
+	end
+end
+optparser.parse!
+
 @base_url = 'http://api.flickr.com/services/rest/'
+@api_key = '28698c60ea6da45e56e1b991cce417b3'
+@format = 'json'
+@bbox = !@options[:exact]
 
 def get_all_photos(bbox = false)
 	cities = {
@@ -64,8 +90,6 @@ def get_photos(city, start_date, end_date, file, bbox = false)
 	file.write("#{start_date}, #{end_date}\n")
 
 	method = 'flickr.photos.search'
-	format = 'json'
-	api_key = '28698c60ea6da45e56e1b991cce417b3'
 
 	min_taken_date = start_date
 	max_taken_date = end_date
@@ -77,7 +101,7 @@ def get_photos(city, start_date, end_date, file, bbox = false)
 
 		puts "Page #{page + 1}"
 
-		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=#{per_page}#{geo}"
+		query = "?method=#{method}&format=#{@format}&nojsoncallback=1&api_key=#{@api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=#{per_page}#{geo}"
 		url = "#{@base_url}#{query}"
 		puts url
 
@@ -98,7 +122,11 @@ def get_photos(city, start_date, end_date, file, bbox = false)
 
 		photos.each do |dict|
 			photo_url = construct_photo_url(dict)
-			file.write("#{photo_url}\n")
+
+			if not @options[:dryrun]
+				file.write("#{photo_url}\n")
+			end
+
 			flickr_urls << photo_url
 		end
 
@@ -115,4 +143,4 @@ def construct_photo_url(dict)
 	return "http://farm#{farm}.staticflickr.com/#{server}/#{id}_#{secret}.jpg"
 end
 
-get_all_photos(true)
+get_all_photos(@bbox)
