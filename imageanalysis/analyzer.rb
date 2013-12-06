@@ -12,7 +12,7 @@ class ColorAnalyzer
 	# + num_colors : the number of colors to reduce the image to
 	# + colorspace : the colorspace to quantize in (default - HSL)
 	###
-	def initialize(num_colors, colorspace=Magick::HSLColorspace) 
+	def initialize(num_colors, colorspace=Magick::RGBColorspace) 
 		@num_colors = num_colors
 		@colorspace = colorspace
 		@aggregate = {:hues => {}, :total_hue_count => 0}
@@ -28,7 +28,7 @@ class ColorAnalyzer
 			# We convert to HSLA to easily draw an ordered gradient.
 			# Hue is between 0 and 360. 
 			# Saturation and lightness are between 0 and 255.
-			hue, sat, light = pixel.to_hsla 
+			hue, sat, light = pixel.to_hsla
 			hue = hue.round # Round the hue for looser aggregation
 			hue = hue == 360 ? 0 : hue
 
@@ -154,7 +154,7 @@ if __FILE__ == $PROGRAM_NAME
 
 		month_dirs.each do |month|
 			puts "Processing images for #{month}"
-			analyzer = ColorAnalyzer.new(1280)
+			analyzer = ColorAnalyzer.new(512)
 			images = Dir.glob("#{dir}/#{month}/*.jpg")
 			processed = 0
 
@@ -166,8 +166,8 @@ if __FILE__ == $PROGRAM_NAME
 
 				processed += 1
 				progress = ((processed / images.length.to_f) * 100).to_i
-				print "\r#{progress}%"
-
+				
+				print "\r#{progress}%" if options[:verbose]
 				sample = options[:sample]
 				if sample != nil && progress >= sample
 					break
