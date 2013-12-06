@@ -88,13 +88,20 @@ File.open("#{base_folder}/#{folder}/#{city}_data.txt", 'r').each_line do |line|
 		photo = deconstruct_photo_url(url)
 		geo = get_photo_geo(photo[:id])
 
+		begin
+			geo = geo.nil? ? nil : geo['photo']['location']
+		rescue => e
+			puts 'CANT FIND GEO'
+			next
+		end
+
 		coll.insert({
 			:id => photo[:id],
 			:secret => photo[:secret],
 			:farm => photo[:farm],
 			:server => photo[:server],
 			:url => url,
-			:location => geo.nil? ? nil : geo['photo']['location'],
+			:location => geo,
 			:start_date => start_date.gsub("\n", ''),
 			:end_date => end_date.gsub("\n", '')
 		})
