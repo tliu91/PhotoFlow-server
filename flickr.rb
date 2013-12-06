@@ -28,6 +28,8 @@ end
 optparser.parse!
 
 @base_url = 'http://api.flickr.com/services/rest/'
+@api_key = '28698c60ea6da45e56e1b991cce417b3'
+@format = 'json'
 @bbox = !@options[:exact]
 
 def get_all_photos(bbox = false)
@@ -88,8 +90,6 @@ def get_photos(city, start_date, end_date, file, bbox = false)
 	file.write("#{start_date}, #{end_date}\n")
 
 	method = 'flickr.photos.search'
-	format = 'json'
-	api_key = '28698c60ea6da45e56e1b991cce417b3'
 
 	min_taken_date = start_date
 	max_taken_date = end_date
@@ -101,11 +101,9 @@ def get_photos(city, start_date, end_date, file, bbox = false)
 
 		puts "Page #{page + 1}"
 
-		query = "?method=#{method}&format=#{format}&nojsoncallback=1&api_key=#{api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=#{per_page}#{geo}"
+		query = "?method=#{method}&format=#{@format}&nojsoncallback=1&api_key=#{@api_key}&page=#{page+1}&min_taken_date=#{min_taken_date}&max_taken_date=#{max_taken_date}&per_page=#{per_page}#{geo}"
 		url = "#{@base_url}#{query}"
 		puts url
-
-		next if @options[:dryrun]
 
 		begin
 			results = RestClient.get(url)
@@ -124,7 +122,11 @@ def get_photos(city, start_date, end_date, file, bbox = false)
 
 		photos.each do |dict|
 			photo_url = construct_photo_url(dict)
-			file.write("#{photo_url}\n")
+
+			if not @options[:dryrun]
+				file.write("#{photo_url}\n")
+			end
+
 			flickr_urls << photo_url
 		end
 
