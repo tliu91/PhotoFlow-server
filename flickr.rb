@@ -4,7 +4,31 @@ require 'rest_client'
 require 'json'
 require 'date'
 
+require 'optparse'
+
+@options = {}
+optparser = OptionParser.new do |opt|
+	opt.banner = "Usage: flickr.rb [options]"
+
+	@options[:dryrun] = false
+	opt.on("-d", "--dryrun", "run without persisting data") do
+		@options[:dryrun] = true
+	end
+
+	@options[:exact] = false
+	opt.on("-e", "--exact", "use exact lat/long, default to bounding box") do
+		@options[:exact] = true
+	end
+
+	opt.on("-h", "--help", "help") do
+		puts optparser
+		exit
+	end
+end
+optparser.parse!
+
 @base_url = 'http://api.flickr.com/services/rest/'
+@bbox = !@options[:exact]
 
 def get_all_photos(bbox = false)
 	cities = {
@@ -81,6 +105,8 @@ def get_photos(city, start_date, end_date, file, bbox = false)
 		url = "#{@base_url}#{query}"
 		puts url
 
+		next if @options[:dryrun]
+
 		begin
 			results = RestClient.get(url)
 		rescue => e
@@ -115,4 +141,4 @@ def construct_photo_url(dict)
 	return "http://farm#{farm}.staticflickr.com/#{server}/#{id}_#{secret}.jpg"
 end
 
-get_all_photos(true)
+get_all_photos(@bbox)
