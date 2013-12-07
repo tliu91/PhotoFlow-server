@@ -97,7 +97,7 @@ File.open("#{base_folder}/#{folder}/#{city}_data.txt", 'r').each_line do |line|
 				puts "converting index"
 				loc = obj['location']
 				pair = loc.nil? ? [0.0, 0.0] : [loc['longitude'].to_f, loc['latitude'].to_f]
-				coll.update({"_id" => obj['id']}, {'$set' => {"loc" => pair}})
+				coll.update({"_id" => obj['_id']}, {'$set' => {"loc" => pair}})
 			end
 			next
 		end
