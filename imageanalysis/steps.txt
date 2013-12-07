@@ -1,0 +1,27 @@
+1. Get a list of colors from the image and how often they occur (get_pil_clist -> (count, color) == color_histogram (?))
+	# color_histogram returns hash of Magick::Pixel to count
+	e.g. {red=61253, green=59280, blue=55599, opacity=0 => COUNT, }
+	http://studio.imagemagick.org/RMagick/doc/image1.html#color_histogram
+2. Quantize by representative set of colors
+3. Convert to HSLA
+
+4. Compare lightness to see if white, between grey/black, black
+5. Compare saturation to see if grey
+
+6. If not 4 or 5, 
+	store in dict as:
+		key =  num quantized colors * hue (maybe quantized already?)
+		already have hue in degrees
+
+		loop through hue degrees dict
+			# THIS IS FOR THE PIE CHART
+			if a color in 0 to 359
+				keep a list of how far the hue is from the reference colors and the reference color
+					e.g. (hue degrees - reference degree, reference)
+			then find the reference degree that is closest to the hue degree
+				and increment the count of that reference degree by 1
+
+
+
+7.
+
