@@ -1,6 +1,6 @@
 require 'RMagick'
  
-TOP_N = 256   # Number of swatches
+TOP_N = 384  # Number of swatches
  
 # Create a 1-row image that has a column for every color in the quantized
 # image. The columns are sorted by decreasing frequency of appearance in the
@@ -44,13 +44,12 @@ end
 original = Magick::Image.read("/Users/fsosa/Dev/PhotoFlow-server/images/lat-long-bbox/la/2011-03-01/5608490071_37ac2fef3b.jpg").first
  
 # reduce number of colors
-quantized = original.quantize(TOP_N, Magick::HSLColorspace)
+quantized = original.quantize(TOP_N, Magick::RGBColorspace)
 
 # Create an image that has 1 pixel for each of the TOP_N colors.
 normal = sort_by_decreasing_frequency(quantized)
 avg_color = average_color(quantized)
 
-original.write("original.png")
 quantized.write("quantized_#{TOP_N}.png")
 normal.write("normalized_#{TOP_N}.png")
 avg_color.write("avg_color_#{TOP_N}.png")
