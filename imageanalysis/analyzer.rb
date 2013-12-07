@@ -37,12 +37,16 @@ class ColorAnalyzer
 			reference_hue = (hue / 30).round * 30
 			reference_hue = reference_hue == 360 ? 0 : reference_hue 
 
-			isWhite = light / 255.0 >= 0.99
-			isBlack = light / 255.0 <= 0.01
+			light_percent = light / 255.0
+			sat_percent = sat / 255.0
+
+			isWhite = light_percent > 0.99
+			isBlack = sat_percent < 0.01
+			isGrey = (0.01 < light_percent && light_percent < 0.03) || sat_percent < 0.05
 
 			# Avoid pure white and black colors when calculating
 			# aggregate frequency for a more colorful output
-			unless isWhite || isBlack
+			unless isWhite || isBlack || isGrey
 				if @aggregate[:hues][hue] != nil
 					@aggregate[:hues][hue][:total_light] += light
 					@aggregate[:hues][hue][:total_sat] += sat
@@ -58,14 +62,32 @@ class ColorAnalyzer
 
 			# Keep track of reference hues for a simple percentage calculation
 			if @reference_aggregate[:hues][reference_hue] != nil
-				@reference_aggregate[:hues][reference_hue] += count
+				@reference_aggregate[:hues][reference_hue][:count] += count
 			else
-				@reference_aggregate[:hues][reference_hue] = count
+				@reference_aggregate[:hues][reference_hue] = {
+					:count => count
+				}
 			end
 		end
 
-		@aggregate[:total_hue_count] = total_hue_count()
-		@reference_aggregate[:total_hue_count] = total_ref_count()
+		full_count = total_hue_count(@aggregate)
+		ref_count = total_hue_count(@reference_aggregate)
+
+		@aggregate[:total_hue_count] = full_count
+		@reference_aggregate[:total_hue_count] = ref_count
+
+		@aggregate[:hues].each do |hue, info|
+			percentage = info[:count] / full_count.to_f
+			@aggregate[:hues][hue][:percentage] = percentage 
+		end
+
+		@reference_aggregate[:hues].each do |hue, info|
+			percentage = info[:count] / ref_count.to_f
+			@reference_aggregate[:hues][hue][:percentage] = percentage 
+		end
+
+		@aggregate[:total_hue_count] = full_count
+		@reference_aggregate[:total_hue_count] = ref_count
 
 	end
 
@@ -81,19 +103,10 @@ class ColorAnalyzer
 		self.aggregate_colors(color_histogram)
 	end
 
-	def total_hue_count
+	def total_hue_count(aggregate)
 		total_hue_count = 0
-		@aggregate[:hues].each do |hue, info|
+		aggregate[:hues].each do |hue, info|
 			total_hue_count += info[:count]
-		end
-
-		return total_hue_count
-	end
-
-	def total_ref_count
-		total_hue_count = 0
-		@reference_aggregate[:hues].each do |hue, count|
-			total_hue_count += count
 		end
 
 		return total_hue_count
@@ -126,7 +139,7 @@ if __FILE__ == $PROGRAM_NAME
    			options[:sample] = n.to_i
    		end
 
-   		opts.on( '-v', '--verbose', 'Output reference and full aggregates' ) do
+   		opts.on( '-v', '--verbose', 'Does nothing right now' ) do
      		options[:verbose] = true
    		end
 
