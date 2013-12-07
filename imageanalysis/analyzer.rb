@@ -154,7 +154,7 @@ if __FILE__ == $PROGRAM_NAME
 
 		month_dirs.each do |month|
 			puts "Processing images for #{month}"
-			analyzer = ColorAnalyzer.new(512)
+			analyzer = ColorAnalyzer.new(384)
 			images = Dir.glob("#{dir}/#{month}/*.jpg")
 			processed = 0
 
@@ -167,18 +167,11 @@ if __FILE__ == $PROGRAM_NAME
 				processed += 1
 				progress = ((processed / images.length.to_f) * 100).to_i
 				
-				print "\r#{progress}%" if options[:verbose]
+				print "\r#{progress}%"
 				sample = options[:sample]
 				if sample != nil && progress >= sample
 					break
 				end
-			end
-
-			if options[:verbose]
-				puts "===Aggregate==="
-				puts JSON.pretty_generate(analyzer.aggregate)
-				puts "===Reference Aggregate==="
-				puts JSON.pretty_generate(analyzer.reference_aggregate)
 			end
 
 			relative_path = "#{out}/#{month}.json"
