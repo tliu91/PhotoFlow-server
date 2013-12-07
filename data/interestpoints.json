@@ -1,0 +1,290 @@
+[
+  {
+    "name": "TD Garden/North Station",
+    "loc": [
+      "-71.062103",
+      "42.366261"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "South Station",
+    "loc": [
+      "-71.055138",
+      "42.351818"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Back Bay T Stop",
+    "loc": [
+      "-71.075111",
+      "42.347534"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Forest Hills T Stop",
+    "loc": [
+      "-71.114105",
+      "42.300732"
+    ],
+    "type": ""
+  },
+  {
+    "name": "USS Constitution",
+    "loc": [
+      "-71.056969",
+      "42.372738"
+    ],
+    "type": "Historic"
+  },
+  {
+    "name": "Faneuil Hall",
+    "loc": [
+      "-71.056213",
+      "42.360039"
+    ],
+    "type": "Historic"
+  },
+  {
+    "name": "New England Aquarium",
+    "loc": [
+      "-71.04924",
+      "42.359219"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Children's Museum",
+    "loc": [
+      "-71.049767",
+      "42.351658"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Symphony Hall",
+    "loc": [
+      "-71.08567",
+      "42.342808"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Logan International Airport",
+    "loc": [
+      "-71.016518",
+      "42.366631"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "World Trade Center",
+    "loc": [
+      "-71.040306",
+      "42.351776"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Hynes Convention Center",
+    "loc": [
+      "-71.084206",
+      "42.347626"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Bank of America Pavilion",
+    "loc": [
+      "-71.036064",
+      "42.348522"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Wang Theater",
+    "loc": [
+      "-71.064461",
+      "42.350315"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Majestic Theater",
+    "loc": [
+      "-71.065109",
+      "42.35154"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Wilbur Theater",
+    "loc": [
+      "-71.064713",
+      "42.350712"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Shubert Theater",
+    "loc": [
+      "-71.06559",
+      "42.350483"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Charles Playhouse",
+    "loc": [
+      "-71.066193",
+      "42.349987"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Strand Theater",
+    "loc": [
+      "-71.065567",
+      "42.315872"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "Fenway Park",
+    "loc": [
+      "-71.097244",
+      "42.346439"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Fan pier",
+    "loc": [
+      "-71.04525",
+      "42.353764"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Waterside Place",
+    "loc": [
+      "-71.040916",
+      "42.346043"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Channel Center",
+    "loc": [
+      "-71.051659",
+      "42.345394"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Institute Of Contemporary Art",
+    "loc": [
+      "-71.042946",
+      "42.352856"
+    ],
+    "type": "Institutional"
+  },
+  {
+    "name": "27 Drydock",
+    "loc": [
+      "-71.02861",
+      "42.344254"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Opera House",
+    "loc": [
+      "-71.062569",
+      "42.354008"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Washington & Winter/Summer",
+    "loc": [
+      "-71.060493",
+      "42.355457"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Faneuil Hall Sq",
+    "loc": [
+      "-71.053635",
+      "42.359726"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Scollay Sq",
+    "loc": [
+      "-71.059608",
+      "42.3592"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Post Office Sq",
+    "loc": [
+      "-71.056396",
+      "42.357574"
+    ],
+    "type": ""
+  },
+  {
+    "name": "North End",
+    "loc": [
+      "-71.055511",
+      "42.365353"
+    ],
+    "type": "Area"
+  },
+  {
+    "name": "Allston",
+    "loc": [
+      "-71.127762",
+      "42.358086"
+    ],
+    "type": "Area"
+  },
+  {
+    "name": "Dudley Square T Stop",
+    "loc": [
+      "-71.083717",
+      "42.329704"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Broadway T Stop",
+    "loc": [
+      "-71.057114",
+      "42.343365"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Clarendon Sq",
+    "loc": [
+      "-71.073502",
+      "42.347263"
+    ],
+    "type": ""
+  },
+  {
+    "name": "Boston Convention and Exhibition Center",
+    "loc": [
+      "-71.04493",
+      "42.346577"
+    ],
+    "type": ""
+  }
+]
