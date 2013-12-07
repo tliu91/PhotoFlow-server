@@ -87,8 +87,18 @@ File.open("#{base_folder}/#{folder}/#{city}_data.txt", 'r').each_line do |line|
 		url = /(.*).jpg/.match(line)[0]
 		photo = deconstruct_photo_url(url)
 
-		if coll.find('id' => photo[:id]).count() >= 1
+		check = coll.find('id' => photo[:id])
+		if check.count() >= 1
 			puts photo[:id] + ' already exists'
+			# set up the proper index
+			check.each do |obj|
+				next if !obj['loc'].nil?
+
+				puts "converting index"
+				loc = obj['location']
+				pair = loc.nil? ? [0.0, 0.0] : [loc['longitude'].to_f, loc['latitude'].to_f]
+				coll.update({"_id" => obj['id']}, {'$set' => {"loc" => pair}})
+			end
 			next
 		end
 
@@ -97,11 +107,11 @@ File.open("#{base_folder}/#{folder}/#{city}_data.txt", 'r').each_line do |line|
 		begin
 			geo = geo.nil? ? nil : geo['photo']['location']
 		rescue => e
-			puts 'CANT FIND GEO'
+			geo = nil
 			next
 		end
 
-		coll.insert({
+		obj = {
 			:id => photo[:id],
 			:secret => photo[:secret],
 			:farm => photo[:farm],
@@ -110,7 +120,15 @@ File.open("#{base_folder}/#{folder}/#{city}_data.txt", 'r').each_line do |line|
 			:location => geo,
 			:start_date => start_date.gsub("\n", ''),
 			:end_date => end_date.gsub("\n", '')
-		})
+		}
+
+		unless geo.nil?
+			obj[:loc] = [geo['longitude'].to_f, geo['latitude'].to_f]
+		else
+			obj[:loc] = [0.0, 0.0]
+		end
+
+		coll.insert(obj)
 
 	end
 end
