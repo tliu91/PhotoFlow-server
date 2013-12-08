@@ -17,6 +17,11 @@ optparser = OptionParser.new do |opt|
 		options[:output] = filename
 	end
 
+	options[:database] = false
+	opt.on("-d", "--database", "whether to export to database") do
+		options[:database] = true
+	end
+
 	opt.on("-h", "--help", "help") do
 		puts optparser
 		exit
@@ -41,4 +46,14 @@ unless options[:output].nil?
 	json = JSON.pretty_generate(locations, :indent => '  ')
 	file = File.open(options[:output], 'w')
 	file.write(json)
+end
+
+if options[:database]
+	require 'mongo'
+	client = Mongo::MongoClient.new
+	db     = client['photoflow']
+	coll   = db['boston_places']
+	locations.each do |location|
+		coll.insert(location)
+	end
 end
