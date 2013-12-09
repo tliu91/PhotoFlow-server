@@ -7,6 +7,8 @@
 <script src="/circularHeatChart.js" charset="utf-8"></script>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="http://underscorejs.org/underscore-min.js"></script>
+<script src="nv.d3.min.js"></script>
+<link href="nv.d3.css" rel="stylesheet" type="text/css">
 
 <style>
 body {
@@ -23,7 +25,11 @@ body {
 
 <body>
 
-<div id="dataviztest"></div>
+<div id="dataviztest">
+    <h1>Reference Hues</h1>
+    <svg id="test2" class="mypiechart"></svg>
+    <h1>Full Aggregate</h1>
+</div>
 <div id="wrapper">
 	<div id="nation"></div>
 	<div id="mostFreqColors"></div>
@@ -62,6 +68,20 @@ function loadData(callback) {
 
      
 };
+
+function getRefMonthData(city, month) {
+    var hue_data =[];
+    var tot_hue_perc = 0;
+    // gets the reference data and makes the comparison target thing
+    month_data = data[city][month]
+
+    reference = month_data.ref_aggregate
+    for (var hue in reference.hues){
+        hue_data.push({"hue" : hue, "percent" : reference.hues[hue].percentage}); 
+    }; 
+
+    return hue_data;
+}
 
 function getMonthData(city, month) {
     var hue_data =[];
@@ -120,11 +140,36 @@ function displayReferenceChart(city, month) {
         .attr("fill", function(d) { return d[0]});
         //return d3.hsl(d[0], 1, 0.5) });
 
-    svg.append("text")
+    svg.append("text").attr("id", "#month_label")
         .attr("x", 175).attr("y", 75)
         .text(monthNames[month - 1])
 
 };
+
+function addReferencePieChart(city, month) {
+    nv.addGraph(function() {
+        var width = 500,
+            height = 500;
+
+        ref_data = getRefMonthData("boston", month);
+        var chart = nv.models.pieChart()
+            .x(function(d) { return d.hue })
+            .y(function(d) { return d.percent * 100})
+            .color(function(d) { return d3.hsl(d.data.hue, 0.5, 0.5) })
+            .width(width)
+            .height(height)
+            .showLegend(false);
+
+          d3.select("#test2")
+              .datum(ref_data)
+            .transition().duration(1200)
+              .attr('width', width)
+              .attr('height', height)
+              .call(chart);
+
+        return chart;
+    });
+}
 
 
 // ----------- Entry point ----------
@@ -158,12 +203,12 @@ $(function() {
                 }).attr("fill", function(d) { return d[0]});
                 //return d3.hsl(d[0], 1, 0.5) });
 
-            d3.select("text").text(monthNames[month - 1]);   
+            d3.selectAll("text#month_label").text(monthNames[month - 1]);   
 
 
             month++;
         }, updateDelay);   
-        
+        addReferencePieChart("boston", month)
     });
 
 });
