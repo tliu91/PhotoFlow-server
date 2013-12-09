@@ -163,7 +163,9 @@ if __FILE__ == $PROGRAM_NAME
 			FileUtils.mkdir_p(out)
 		end
 
-		month_dirs = Dir.glob("#{dir}/**").map { |f| f[/\d{4}-\d{2}-\d{2}/] }
+		month_dirs = Dir.glob("#{dir}/**").map do |path|
+			path.split('/').last
+		end
 
 		month_dirs.each do |month|
 			puts "Processing images for #{month}"
