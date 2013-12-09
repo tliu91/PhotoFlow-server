@@ -39,39 +39,40 @@ d3.json("./imageanalysis/out/boston/2011-01-01.json", function(json){
 	for (var hue in json.ref_aggregate.hues){
 		hue_data.push([hue, 1 - tot_hue_perc]); // 0: is hue, 1: is percentage ref_hue occurs
 		tot_hue_perc += json.ref_aggregate.hues[hue]["percentage"];
-        console.log(tot_hue_perc);
 	};
-    console.log(hue_data)
+
 	// gets average color for every aggregated hue
 	for (var hue in json.aggregate.hues){
-		//console.log(json.aggregate["hues"][hue]["percentage"]);
-		var avg_light = json.aggregate["hues"][hue]["total_light"]/json.aggregate["hues"][hue]["count"];
-		var avg_sat = json.aggregate["hues"][hue]["total_sat"]/json.aggregate["hues"][hue]["count"];
-		//console.log(avg_light, avg_sat);
+		var avg_light = json.aggregate["hues"][hue]["total_light"] / json.aggregate["hues"][hue]["count"];
+		var avg_sat = json.aggregate["hues"][hue]["total_sat"] / json.aggregate["hues"][hue]["count"];
 	};
 
     var svg = d3.select("#dataviztest").append("svg")
-        .attr("width", 500)
-        .attr("height", 500);
+        .attr("width", 600)
+        .attr("height", 600);
 
     var g = svg.selectAll("g")
         .data(hue_data)
     .enter().append("g")
-        .attr("transform", "translate(" + [150, 150] + ")");
+        .attr("transform", "translate(" + [200, 200] + ")");
 
-    g.append("rect")
-        .attr("rx", 10)
-        .attr("ry", 10)
-        .attr("x", -10)
-        .attr("y", -10)
-        .attr("width", 100)
-        .attr("height", 100)
-        .attr("transform", function(d) { return "scale(" + d[1] + ")"; })
-        .attr("fill", function(d) {console.log(d3.hsl(d[0], 0.5, 0.5)); return d3.hsl(d[0], 1, 0.5)});
+    g.append("circle")
+        .attr("cx", 10)
+        .attr("cy", 10)
+        .attr("r", 100)
+        .attr("transform", function(d) { 
+            scaling_factor = d[1];
+            transform_factor = -(10 * scaling_factor - 1)
+
+            // Translates and scales the circles so that they're concentric
+            translate = "translate(" + transform_factor + "," + transform_factor + ")";
+            scale =  "scale(" + d[1]+ ")"; 
+
+            return translate + " " +  scale
+        })
+        .attr("fill", function(d) { return d3.hsl(d[0], 1, 0.5) });
 
 });
-
-//visualizes data (using rounded rect)
 
 
 
