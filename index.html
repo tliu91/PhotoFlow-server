@@ -19,16 +19,20 @@ body {
 #wrapper{width:1500;overflow: hidden;}
 #nation{width:1000px; height:700px; float:left; fill:#ccc;}
 #mostFreqColors{overflow:hidden;}
+#viztest{overflow:hidden;}
+#test2{width: 600px; height:500px;float:left;}
+#dataviztest{float:left; overflow:hidden;}
 
 </style>
 </head>
 
 <body>
 
-<div id="dataviztest">
+<div id="viztest">
     <h1>Reference Hues</h1>
     <svg id="test2" class="mypiechart"></svg>
     <h1>Full Aggregate</h1>
+    <div id="dataviztest"></div>
 </div>
 <div id="wrapper">
 	<div id="nation"></div>
@@ -146,6 +150,7 @@ function displayReferenceChart(city, month) {
 
 };
 
+// Creates pie chart
 function addReferencePieChart(city, month) {
     nv.addGraph(function() {
         var width = 500,
