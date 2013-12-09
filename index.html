@@ -37,9 +37,8 @@ cities = ["boston", "chicago", "dc", "houston", "la", "minneapolis", "seattle"]
 
 var data = {}
 
-$(function() {
-    // Load the data for all cities into a dictionary
-    _.each(cities, function(city) {
+function load_data(callback) {
+     _.each(cities, function(city) {
         data[city] = {}
         _.each(_.range(1, 13), function(month) {
             month_string = month < 10 ? "0" + month : month;
@@ -52,7 +51,8 @@ $(function() {
         });
     });
 
-});
+     callback();
+};
 
 
 
@@ -98,6 +98,16 @@ d3.json("./imageanalysis/out/boston/2011-01-01.json", function(json){
         .attr("fill", function(d) { return d3.hsl(d[0], 1, 0.5) });
 
 });
+
+// ----------- Entry point ----------
+$(function() {
+    load_data(function() {
+
+    });
+
+});
+
+
 
 
 
