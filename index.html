@@ -5,6 +5,8 @@
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="/circularHeatChart.js" charset="utf-8"></script>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://underscorejs.org/underscore-min.js"></script>
 
 <style>
 body {
@@ -31,10 +33,33 @@ body {
 
 // Testing data structure's visualization
 
-var hue_data =[];
-var tot_hue_perc = 0;
+cities = ["boston", "chicago", "dc", "houston", "la", "minneapolis", "seattle"]
+
+var data = {}
+
+$(function() {
+    // Load the data for all cities into a dictionary
+    _.each(cities, function(city) {
+        data[city] = {}
+        _.each(_.range(1, 13), function(month) {
+            month_string = month < 10 ? "0" + month : month;
+            date = "2011-" + month_string + "-01";
+            month_path = "imageanalysis/out/" + city + "/" + date + ".json"
+
+            $.getJSON(month_path, function(json) {
+                data[city][month] = json;
+            });
+        });
+    });
+
+});
+
+
 
 d3.json("./imageanalysis/out/boston/2011-01-01.json", function(json){
+    var hue_data =[];
+    var tot_hue_perc = 0;
+
 	// gets the reference data and makes the comparison target thing
 	for (var hue in json.ref_aggregate.hues){
 		hue_data.push([hue, 1 - tot_hue_perc]); // 0: is hue, 1: is percentage ref_hue occurs
@@ -92,9 +117,9 @@ d3.json("/us.json", function(error, topology) {
 
 
 // This is a modified version of the circular heat chart at http://prcweb.co.uk/lab/circularheat/
-var data = [];
+var chart_data = [];
 
-for(var i=0; i<(5*12); i++) data[i] = Math.random();
+for(var i=0; i<(5*12); i++) chart_data[i] = Math.random();
 
 var chart = circularHeatChart()
     .innerRadius(20)
@@ -104,7 +129,7 @@ var chart = circularHeatChart()
 
 d3.select('#mostFreqColors')
     .selectAll('svg')
-    .data([data])
+    .data([chart_data])
     .enter()
     .append('svg')
     .call(chart);
