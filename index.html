@@ -162,7 +162,7 @@ function addReferencePieChart(city, month) {
 
           d3.select("#test2")
               .datum(ref_data)
-            .transition().duration(1200)
+            .transition()
               .attr('width', width)
               .attr('height', height)
               .call(chart);
@@ -179,6 +179,7 @@ $(function() {
         month = 1
         // This is the first display
         displayReferenceChart("boston", month);
+        addReferencePieChart("boston", month)
 
         //displayReferenceChart("seattle", month);
         /*for (var city in cities){
@@ -191,6 +192,7 @@ $(function() {
             month = month > 12 ? 1 : month;
             new_data = getMonthData("boston", month);
             circle = d3.selectAll("circle").data(new_data);
+            addReferencePieChart("boston", month)
 
             circle.transition()
                 .attr("transform", function(d) { 
@@ -207,7 +209,7 @@ $(function() {
 
             month++;
         }, updateDelay);   
-        addReferencePieChart("boston", month)
+
     });
 
 });
