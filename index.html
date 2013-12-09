@@ -140,7 +140,7 @@ function displayReferenceChart(city, month) {
         .attr("fill", function(d) { return d[0]});
         //return d3.hsl(d[0], 1, 0.5) });
 
-    svg.append("text").attr("id", "#month_label")
+    svg.append("text").attr("id", "month_label")
         .attr("x", 175).attr("y", 75)
         .text(monthNames[month - 1])
 
@@ -203,8 +203,7 @@ $(function() {
                 }).attr("fill", function(d) { return d[0]});
                 //return d3.hsl(d[0], 1, 0.5) });
 
-            d3.selectAll("text#month_label").text(monthNames[month - 1]);   
-
+            d3.selectAll("#month_label").text(monthNames[month - 1]);   
 
             month++;
         }, updateDelay);   
