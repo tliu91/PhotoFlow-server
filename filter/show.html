@@ -1,0 +1,25 @@
+<!DOCTYPE>
+<html>
+<head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+$(function () {
+	$.ajax({
+		url: 'out/match.json',
+		success: function (locations) {
+			_.each(locations, function (photos, location) {
+				document.write(location + '<br>');
+				_.each(photos, function (photo) {
+					document.write('<img src="' + photo.url + '" /><br>');
+				});
+			});
+		}
+	});
+});
+</script>
+</body>
+</html>
