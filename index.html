@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Visualization of shit</title>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="/circularHeatChart.js" charset="utf-8"></script>
+
+<style>
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin: 2%;
+}
+
+#wrapper{width:1500;overflow: hidden;}
+#nation{width:1000px; height:700px; float:left; fill:#ccc;}
+#mostFreqColors{overflow:hidden;}
+
+</style>
+</head>
+
+<body>
+
+<div id="dataviztest"></div>
+<div id="wrapper">
+	<div id="nation"></div>
+	<div id="mostFreqColors"></div>
+</div>
+
+<script type="text/javascript">
+
+// Testing data structure's visualization
+
+var hue_data =[];
+var tot_hue_perc = 0;
+
+d3.json("./imageanalysis/out/boston/2011-01-01.json", function(json){
+	// gets the reference data and makes the comparison target thing
+	for (var hue in json.ref_aggregate.hues){
+		hue_data.push([hue, 1 - tot_hue_perc]); // 0: is hue, 1: is percentage ref_hue occurs
+		tot_hue_perc += json.ref_aggregate.hues[hue]["percentage"];
+	};
+	// gets average color for every aggregated hue
+	for (var hue in json.aggregate.hues){
+		//console.log(json.aggregate["hues"][hue]["percentage"]);
+		var avg_light = json.aggregate["hues"][hue]["total_light"]/json.aggregate["hues"][hue]["count"];
+		var avg_sat = json.aggregate["hues"][hue]["total_sat"]/json.aggregate["hues"][hue]["count"];
+		//console.log(avg_light, avg_sat);
+	};
+});
+
+//visualizes data (using rounded rect)
+
+var svg = d3.select("#dataviztest").append("svg")
+    .attr("width", 500)
+    .attr("height", 500);
+
+var g = svg.selectAll("g")
+    .data(hue_data)
+  .enter().append("g")
+  	.attr("transform", "translate(" + [150, 150] + ")");
+
+g.append("rect")
+    .attr("rx", 6)
+    .attr("ry", 6)
+    .attr("x", -10)
+    .attr("y", -10)
+    .attr("width", 25)
+    .attr("height", 25)
+    .attr("transform", function(d) { console.log(d);return "scale(" + (1 - d[1] / 25) * 20 + ")"; })
+    .attr("fill", d3.scale.category20c());
+
+
+// nation visualization
+var path = d3.geo.path();
+
+var svg = d3.select("#nation").append("svg")
+    .attr("width", 960)
+    .attr("height", 500);
+
+d3.json("/us.json", function(error, topology) {
+  svg.append("path")
+      .datum(topojson.feature(topology, topology.objects.land))
+      .attr("d", path);
+});
+
+
+// This is a modified version of the circular heat chart at http://prcweb.co.uk/lab/circularheat/
+var data = [];
+
+for(var i=0; i<(5*12); i++) data[i] = Math.random();
+
+var chart = circularHeatChart()
+    .innerRadius(20)
+    .range(["white", "#cca"])
+    .radialLabels(["Boston", "Chicago", "Houston", "Los Angeles", "Seattle"])
+    .segmentLabels(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]);
+
+d3.select('#mostFreqColors')
+    .selectAll('svg')
+    .data([data])
+    .enter()
+    .append('svg')
+    .call(chart);
+
+</script>
+</body>
+</html>
+
