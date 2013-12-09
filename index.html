@@ -21,7 +21,7 @@ body {
 #mostFreqColors{overflow:hidden;}
 #viztest{overflow:hidden;}
 #test2{width: 600px; height:500px;float:left;}
-#dataviztest{float:left; overflow:hidden;}
+#dataviztest{width: 400px; height:400px; float:left; overflow:hidden;}
 
 </style>
 </head>
@@ -233,40 +233,7 @@ d3.json("/us.json", function(error, topology) {
 });
 
 
-// This is a modified version of the circular heat chart at http://prcweb.co.uk/lab/circularheat/
-//loadData(function(){
-var chart_data = [];
-/*
-for (var ci in cities){
-    for (var mo = 1; mo < 13; mo++){
-        var avg_color = 0;
-        console.log(data["boston"][1])
-        city_data = getMonthData(cities[ci], mo);
-        ci_aggregate = city_data.aggregate
-        for (var hue in ci_aggregate.hues){
-            avg_color += hue * ci_aggregate.hues[hue]["percentage"];
-            
-        };
-        var new_hue = d3.hsl(avg_color, 0.75, 0.5);
-        chart_data.push(new_hue);
-    }
-};*/
 
-for(var i=0; i<(5*12); i++) chart_data[i] = Math.random();
-
-var chart = circularHeatChart()
-    .innerRadius(20)
-    .range(["white", "#cca"])
-    .radialLabels(["Boston", "Chicago", "Houston", "Los Angeles", "Seattle"])
-    .segmentLabels(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]);
-
-d3.select('#mostFreqColors')
-    .selectAll('svg')
-    .data([chart_data])
-    .enter()
-    .append('svg')
-    .call(chart);
-//});
 </script>
 </body>
 </html>
