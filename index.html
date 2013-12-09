@@ -62,10 +62,9 @@ function loadData(callback) {
      
 };
 
-function displayReferenceChart(city, month) {
+function getMonthData(city, month) {
     var hue_data =[];
     var tot_hue_perc = 0;
-
     // gets the reference data and makes the comparison target thing
     month_data = data[city][month]
 
@@ -82,13 +81,19 @@ function displayReferenceChart(city, month) {
         var avg_sat = aggregate["hues"][hue]["total_sat"] / aggregate["hues"][hue]["count"];
     };
 
+    return hue_data;
+};
+
+function displayReferenceChart(city, month) {
+    hue_data = getMonthData(city, month);
+
     var svg = d3.select("#dataviztest").append("svg")
         .attr("width", 600)
         .attr("height", 600);
 
     var g = svg.selectAll("g")
         .data(hue_data)
-    .enter().append("g")
+        .enter().append("g")
         .attr("transform", "translate(" + [200, 200] + ")");
 
     g.append("circle")
@@ -107,6 +112,10 @@ function displayReferenceChart(city, month) {
         })
         .attr("fill", function(d) { return d3.hsl(d[0], 1, 0.5) });
 
+    g.append("text")
+        .attr("x", 0).attr("y", -125)
+        .text(function(d) { return month; })
+
 };
 
 
@@ -114,7 +123,33 @@ function displayReferenceChart(city, month) {
 $(function() {
     // First we load all the data and do all the things we need the data for (chart drawing) in the callback
     loadData(function() {
-        displayReferenceChart("boston", 1)
+        month = 1
+        // This is the first display
+        displayReferenceChart("boston", month);
+
+        updateDelay = 1000
+        // then it updates every updateDelay ms
+        setInterval(function() {
+            month = month > 12 ? 1 : month;
+            new_data = getMonthData("boston", month);
+            circle = d3.selectAll("circle").data(new_data);
+
+            circle.transition()
+                .attr("transform", function(d) { 
+                    scaling_factor = d[1];
+                    transform_factor = -(10 * scaling_factor - 1)
+                    // Translates and scales the circles so that they're concentric
+                    translate = "translate(" + transform_factor + "," + transform_factor + ")";
+                    scale =  "scale(" + d[1]+ ")"; 
+                    return translate + " " +  scale
+                }).attr("fill", function(d) { return d3.hsl(d[0], 1, 0.5) });
+
+            d3.select("text").text(month);   
+
+
+            month++;
+        }, updateDelay);   
+        
     });
 
 });
