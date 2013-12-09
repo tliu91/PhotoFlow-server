@@ -24,7 +24,7 @@ body {
 #dcdataviz{left:700px; top:200px;}
 #houstondataviz{left:400px; top:300px;}
 #ladataviz{left:100px; top:180px;}
-#minndataviz{left:450px; top:20px;}
+#minneapolisdataviz{left:450px; top:20px;}
 #seattledataviz{left:100px; top:-25px;}
 
 #viztest{overflow:hidden;}
@@ -71,7 +71,7 @@ body {
     <div id="ladataviz" class="cityviz">
         <p>LA</p>
     </div>
-    <div id="minndataviz" class="cityviz">
+    <div id="minneapolisdataviz" class="cityviz">
         <p>Minneapolis</p>
     </div>
     <div id="seattledataviz" class="cityviz">
@@ -227,7 +227,6 @@ function displayTempLine(city, month) {
             .tickFormat(d3.format('d'))
         ;
 
-        // console.log(tempData(city));
         d3.select('#chart svg')
             .datum(tempData(city))
             .call(chart1);
@@ -239,18 +238,16 @@ function displayTempLine(city, month) {
 
 }
 
-function displayReferenceChart(city, month, div) {
+function drawAggregateChart(city, month, div) {
     hue_data = getMonthData(city, month);
 
     // variables for the full aggregate data viz
-    console.log(div);
     var putdiv = "#dataviztest"
     var size = 100;
     loc = [200,200];
 
     // variables for the smaller aggregate data viz on map
     if (div < 7){
-        console.log("lala")
         size = 50;
         loc= [50,50];
         if (div == 0){putdiv = "#bostondataviz";}
@@ -258,7 +255,7 @@ function displayReferenceChart(city, month, div) {
         else if (div == 2){putdiv = "#dcdataviz";}
         else if (div == 3){putdiv = "#houstondataviz";}
         else if (div == 4){putdiv = "#ladataviz";}
-        else if (div == 5){putdiv = "#minndataviz";}
+        else if (div == 5){putdiv = "#minneapolisdataviz";}
         else {putdiv = "#seattledataviz";}
         
     }
@@ -275,6 +272,39 @@ function displayReferenceChart(city, month, div) {
         .attr("cx", 10)
         .attr("cy", 10)
         .attr("r", size)
+
+    svg.append("text").attr("id", "month_label")
+        .attr("x", 175).attr("y", 75)    
+
+}
+
+function updateReferenceChart(city, month, div) {
+    hue_data = getMonthData(city, month);
+
+    // variables for the full aggregate data viz
+    var putdiv = "#dataviztest"
+    var size = 100;
+    loc = [200,200];
+
+    // variables for the smaller aggregate data viz on map
+    if (div < 7){
+        size = 50;
+        loc= [50,50];
+        if (div == 0){putdiv = "#bostondataviz";}
+        else if (div == 1){putdiv = "#chicagodataviz";}
+        else if (div == 2){putdiv = "#dcdataviz";}
+        else if (div == 3){putdiv = "#houstondataviz";}
+        else if (div == 4){putdiv = "#ladataviz";}
+        else if (div == 5){putdiv = "#minneapolisdataviz";}
+        else {putdiv = "#seattledataviz";}
+        
+    }
+    
+    var selector = putdiv + " svg circle"
+    console.log(selector)
+    var circle = d3.selectAll(selector).data(hue_data)
+
+    circle.transition()
         .attr("transform", function(d) { 
             scaling_factor = d[1];
             transform_factor = -(10 * scaling_factor - 1)
@@ -282,16 +312,11 @@ function displayReferenceChart(city, month, div) {
             // Translates and scales the circles so that they're concentric
             translate = "translate(" + transform_factor + "," + transform_factor + ")";
             scale =  "scale(" + d[1]+ ")"; 
-
             return translate + " " +  scale 
         })
         .attr("fill", function(d) { return d[0]});
-        //return d3.hsl(d[0], 1, 0.5) });
 
-    svg.append("text").attr("id", "month_label")
-        .attr("x", 175).attr("y", 75)
-        .text(monthNames[month - 1])
-
+    var text = d3.selectAll("#month_label").text(monthNames[month - 1])
 };
 
 // Creates pie chart
@@ -321,6 +346,8 @@ function addReferencePieChart(city, month) {
 }
 
 
+
+
 // ----------- Entry point ----------
 $(function() {
     // First we load all the data and do all the things we need the data for (chart drawing) in the callback
@@ -328,7 +355,7 @@ $(function() {
         drawNation();
         month = 1
         // This is the first display
-        displayReferenceChart("boston", month, 20);
+        drawAggregateChart("boston", month, 20);
         addReferencePieChart("boston", month)
 
         //displayReferenceChart("seattle", month);
@@ -336,32 +363,24 @@ $(function() {
             displayReferenceChart(cities[city], month);
         }*/
 
-        updateDelay = 1000
+        updateDelay = 2000
         // then it updates every updateDelay ms
         setInterval(function() {
             month = month > 12 ? 1 : month;
             new_data = getMonthData("boston", month);
-            circle = d3.selectAll("circle").data(new_data);
-            addReferencePieChart("boston", month)
+            addReferencePieChart("boston", month);
 
-            circle.transition()
-                .attr("transform", function(d) { 
-                    scaling_factor = d[1];
-                    transform_factor = -(10 * scaling_factor - 1)
-                    // Translates and scales the circles so that they're concentric
-                    translate = "translate(" + transform_factor + "," + transform_factor + ")";
-                    scale =  "scale(" + d[1]+ ")"; 
-                    return translate + " " +  scale
-                }).attr("fill", function(d) { return d[0]});
-                //return d3.hsl(d[0], 1, 0.5) });
-
-            d3.selectAll("#month_label").text(monthNames[month - 1]);   
+            updateReferenceChart("boston", month)  // FULL SIZE VERSION
+            _.each(cities, function(city, index) {
+                console.log(city, index)
+                updateReferenceChart(city, month, index);
+            });
 
             month++;
         }, updateDelay);   
 
         displayTempLine("boston", 1)
-    });
+     });
 
     
 
@@ -386,7 +405,7 @@ function drawNation(){
             .attr("d", path);
     });
     for (city in cities){
-        displayReferenceChart(cities[city], 1, city);
+        drawAggregateChart(cities[city], 1, city);
     }
 };
 
