@@ -39,7 +39,9 @@ d3.json("./imageanalysis/out/boston/2011-01-01.json", function(json){
 	for (var hue in json.ref_aggregate.hues){
 		hue_data.push([hue, 1 - tot_hue_perc]); // 0: is hue, 1: is percentage ref_hue occurs
 		tot_hue_perc += json.ref_aggregate.hues[hue]["percentage"];
+        console.log(tot_hue_perc);
 	};
+    console.log(hue_data)
 	// gets average color for every aggregated hue
 	for (var hue in json.aggregate.hues){
 		//console.log(json.aggregate["hues"][hue]["percentage"]);
@@ -47,28 +49,31 @@ d3.json("./imageanalysis/out/boston/2011-01-01.json", function(json){
 		var avg_sat = json.aggregate["hues"][hue]["total_sat"]/json.aggregate["hues"][hue]["count"];
 		//console.log(avg_light, avg_sat);
 	};
+
+    var svg = d3.select("#dataviztest").append("svg")
+        .attr("width", 500)
+        .attr("height", 500);
+
+    var g = svg.selectAll("g")
+        .data(hue_data)
+    .enter().append("g")
+        .attr("transform", "translate(" + [150, 150] + ")");
+
+    g.append("rect")
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .attr("x", -10)
+        .attr("y", -10)
+        .attr("width", 100)
+        .attr("height", 100)
+        .attr("transform", function(d) { return "scale(" + d[1] + ")"; })
+        .attr("fill", function(d) {console.log(d3.hsl(d[0], 0.5, 0.5)); return d3.hsl(d[0], 1, 0.5)});
+
 });
 
 //visualizes data (using rounded rect)
 
-var svg = d3.select("#dataviztest").append("svg")
-    .attr("width", 500)
-    .attr("height", 500);
 
-var g = svg.selectAll("g")
-    .data(hue_data)
-  .enter().append("g")
-  	.attr("transform", "translate(" + [150, 150] + ")");
-
-g.append("rect")
-    .attr("rx", 6)
-    .attr("ry", 6)
-    .attr("x", -10)
-    .attr("y", -10)
-    .attr("width", 25)
-    .attr("height", 25)
-    .attr("transform", function(d) { console.log(d);return "scale(" + (1 - d[1] / 25) * 20 + ")"; })
-    .attr("fill", d3.scale.category20c());
 
 
 // nation visualization
