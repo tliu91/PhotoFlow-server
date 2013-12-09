@@ -20,8 +20,8 @@ body {
 #nation{width:1000px; height:700px; float:left; fill:#ccc;}
 #mostFreqColors{overflow:hidden;}
 #viztest{overflow:hidden;}
-#test2{width: 600px; height:500px;float:left;}
-#dataviztest{width: 400px; height:400px; float:left; overflow:hidden;}
+#reference{width: 600px; height:600px;float:left; overflow:hidden;}
+#dataviztest{width: 600px; height:600px; float:left; overflow:hidden;}
 
 </style>
 </head>
@@ -29,10 +29,15 @@ body {
 <body>
 
 <div id="viztest">
-    <h1>Reference Hues</h1>
-    <svg id="test2" class="mypiechart"></svg>
-    <h1>Full Aggregate</h1>
-    <div id="dataviztest"></div>
+    <div id="reference">
+        <h2>Reference Hues</h1>
+        <svg id="test2" class="mypiechart"></svg>
+    </div>
+
+    
+    <div id="dataviztest">
+        <h2>Full Aggregate</h1>
+    </div>
 </div>
 <div id="wrapper">
 	<div id="nation"></div>
