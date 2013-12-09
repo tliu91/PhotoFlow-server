@@ -33,7 +33,8 @@ body {
 
 // Testing data structure's visualization
 
-cities = ["boston", "chicago", "dc", "houston", "la", "minneapolis", "seattle"]
+var cities = ["boston", "chicago", "dc", "houston", "la", "minneapolis", "seattle"]
+var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
 var data = {}
 
@@ -119,9 +120,9 @@ function displayReferenceChart(city, month) {
         .attr("fill", function(d) { return d[0]});
         //return d3.hsl(d[0], 1, 0.5) });
 
-    g.append("text")
-        .attr("x", 0).attr("y", -125)
-        .text(function(d) { return month; })
+    svg.append("text")
+        .attr("x", 175).attr("y", 75)
+        .text(monthNames[month - 1])
 
 };
 
@@ -157,7 +158,7 @@ $(function() {
                 }).attr("fill", function(d) { return d[0]});
                 //return d3.hsl(d[0], 1, 0.5) });
 
-            d3.select("text").text(month);   
+            d3.select("text").text(monthNames[month - 1]);   
 
 
             month++;
