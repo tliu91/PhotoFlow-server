@@ -37,40 +37,50 @@ cities = ["boston", "chicago", "dc", "houston", "la", "minneapolis", "seattle"]
 
 var data = {}
 
-function load_data(callback) {
+function loadData(callback) {
+    counter = 0
      _.each(cities, function(city) {
-        data[city] = {}
+        data[city] = {} // omg fuck javascript and their stupid associative arrays
         _.each(_.range(1, 13), function(month) {
             month_string = month < 10 ? "0" + month : month;
             date = "2011-" + month_string + "-01";
             month_path = "imageanalysis/out/" + city + "/" + date + ".json"
 
             $.getJSON(month_path, function(json) {
-                data[city][month] = json;
+                data[city][month] = json
+                counter++;
+
+                if (counter == cities.length * 12) {
+                    callback();
+                }
             });
+
+            
         });
     });
 
-     callback();
+     
 };
 
-
-
-d3.json("./imageanalysis/out/boston/2011-01-01.json", function(json){
+function displayReferenceChart(city, month) {
     var hue_data =[];
     var tot_hue_perc = 0;
 
-	// gets the reference data and makes the comparison target thing
-	for (var hue in json.ref_aggregate.hues){
-		hue_data.push([hue, 1 - tot_hue_perc]); // 0: is hue, 1: is percentage ref_hue occurs
-		tot_hue_perc += json.ref_aggregate.hues[hue]["percentage"];
-	};
+    // gets the reference data and makes the comparison target thing
+    month_data = data[city][month]
 
-	// gets average color for every aggregated hue
-	for (var hue in json.aggregate.hues){
-		var avg_light = json.aggregate["hues"][hue]["total_light"] / json.aggregate["hues"][hue]["count"];
-		var avg_sat = json.aggregate["hues"][hue]["total_sat"] / json.aggregate["hues"][hue]["count"];
-	};
+    reference = month_data.ref_aggregate
+    for (var hue in reference.hues){
+        hue_data.push([hue, 1 - tot_hue_perc]); // 0: is hue, 1: is percentage ref_hue occurs
+        tot_hue_perc += reference.hues[hue]["percentage"];
+    };
+
+    // gets average color for every aggregated hue
+    aggregate = month_data.aggregate
+    for (var hue in aggregate.hues){
+        var avg_light = aggregate["hues"][hue]["total_light"] / aggregate["hues"][hue]["count"];
+        var avg_sat = aggregate["hues"][hue]["total_sat"] / aggregate["hues"][hue]["count"];
+    };
 
     var svg = d3.select("#dataviztest").append("svg")
         .attr("width", 600)
@@ -97,13 +107,14 @@ d3.json("./imageanalysis/out/boston/2011-01-01.json", function(json){
         })
         .attr("fill", function(d) { return d3.hsl(d[0], 1, 0.5) });
 
-});
+};
+
 
 // ----------- Entry point ----------
 $(function() {
     // First we load all the data and do all the things we need the data for (chart drawing) in the callback
-    load_data(function() {
-
+    loadData(function() {
+        displayReferenceChart("boston", 1)
     });
 
 });
