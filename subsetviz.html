@@ -37,31 +37,6 @@ body {
 
 <body>
     
-<div id="wrapper">
-
-    <div id="nation"></div>
-    <div id="bostondataviz" class="cityviz">
-        <p>Boston</p>
-    </div>
-    <div id="chicagodataviz" class="cityviz">
-        <p>Chicago</p>
-    </div>
-    <div id="dcdataviz" class="cityviz">
-        <p>DC</p>
-    </div>
-    <div id="houstondataviz" class="cityviz">
-        <p>Houston</p>
-    </div>
-    <div id="ladataviz" class="cityviz">
-        <p>LA</p>
-    </div>
-    <div id="minndataviz" class="cityviz">
-        <p>Minneapolis</p>
-    </div>
-    <div id="seattledataviz" class="cityviz">
-        <p>Seattle</p>
-    </div>
-</div>
 
 <div id="viztest">
     <div id="reference">
@@ -80,7 +55,8 @@ body {
 
 // Testing data structure's visualization
 
-var cities = ["boston", "chicago", "dc", "houston", "la", "minneapolis", "seattle"]
+//var cities = ["boston", "chicago", "dc", "houston", "la", "minneapolis", "seattle"]
+var cities = ["boston"]
 var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
 var refHueNames = [ "Red", "Red-Yellows", "Yellows", "Yellow-Greens", "Greens", 
@@ -102,12 +78,12 @@ var data = {}
 
 function loadData(callback) {
     counter = 0
-     _.each(cities, function(city) {
+    _.each(cities, function(city) {
         data[city] = {} // omg fuck javascript and their stupid associative arrays
         _.each(_.range(1, 13), function(month) {
             month_string = month < 10 ? "0" + month : month;
             date = "2011-" + month_string + "-01";
-            month_path = "imageanalysis/out/" + city + "/" + date + ".json"
+            month_path = "imageanalysis/out/boston-subset/" + date + ".json"
 
             $.getJSON(month_path, function(json) {
                 data[city][month] = json
@@ -121,9 +97,9 @@ function loadData(callback) {
             
         });
     });
+};
 
      
-};
 
 function getRefMonthData(city, month) {
     var hue_data =[];
@@ -159,27 +135,15 @@ function getMonthData(city, month) {
 };
 
 // visualize full aggregated data
-function displayReferenceChart(city, month, div) {
+function displayReferenceChart(city, month) {
     hue_data = getMonthData(city, month);
 
     // variables for the full aggregate data viz
+
     var putdiv = "#dataviztest"
     var size = 100;
     loc = [200,200];
 
-    // variables for the smaller aggregate data viz on map
-    if (div < 7){
-        size = 50;
-        loc= [50,50];
-        if (div == 0){putdiv = "#bostondataviz";}
-        else if (div == 1){putdiv = "#chicagodataviz";}
-        else if (div == 2){putdiv = "#dcdataviz";}
-        else if (div == 3){putdiv = "#houstondataviz";}
-        else if (div == 4){putdiv = "#ladataviz";}
-        else if (div == 5){putdiv = "#minndataviz";}
-        else {putdiv = "#seattledataviz";}
-        
-    }
     var svg = d3.select(putdiv).append("svg")
         .attr("width", 600)
         .attr("height", 600);
@@ -238,7 +202,7 @@ function addReferencePieChart(city, month) {
     });
 }
 
-
+/*
 // nation visualization
 function drawNation(){
     var path = d3.geo.path();
@@ -257,7 +221,7 @@ function drawNation(){
     }
 };
 
-
+*/
 
 
 // ----------- Entry point ----------
@@ -267,9 +231,9 @@ $(function() {
         
         month = 1
         // This is the first display
-        displayReferenceChart("boston", month, 10);
+        displayReferenceChart("boston", month);
         addReferencePieChart("boston", month)
-        drawNation();
+
         //displayReferenceChart("seattle", month);
         /*for (var city in cities){
             displayReferenceChart(cities[city], month);
