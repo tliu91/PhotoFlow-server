@@ -75,13 +75,19 @@ function getMonthData(city, month) {
     };
 
     // gets average color for every aggregated hue
+    var agg_hue_data = [];
+    var agg_hue_perc = 0;
     aggregate = month_data.aggregate
     for (var hue in aggregate.hues){
         var avg_light = aggregate["hues"][hue]["total_light"] / aggregate["hues"][hue]["count"];
         var avg_sat = aggregate["hues"][hue]["total_sat"] / aggregate["hues"][hue]["count"];
+        var avg_hue = d3.hsl(hue, 0.75, 0.5);
+        agg_hue_data.push([avg_hue, 1 - agg_hue_perc]);
+        agg_hue_perc += aggregate.hues[hue]["percentage"];
     };
 
-    return hue_data;
+    return agg_hue_data;
+    //return hue_data; // this is for the reference hues
 };
 
 function displayReferenceChart(city, month) {
@@ -110,7 +116,8 @@ function displayReferenceChart(city, month) {
 
             return translate + " " +  scale
         })
-        .attr("fill", function(d) { return d3.hsl(d[0], 1, 0.5) });
+        .attr("fill", function(d) { return d[0]});
+        //return d3.hsl(d[0], 1, 0.5) });
 
     g.append("text")
         .attr("x", 0).attr("y", -125)
@@ -127,6 +134,11 @@ $(function() {
         // This is the first display
         displayReferenceChart("boston", month);
 
+        //displayReferenceChart("seattle", month);
+        /*for (var city in cities){
+            displayReferenceChart(cities[city], month);
+        }*/
+
         updateDelay = 1000
         // then it updates every updateDelay ms
         setInterval(function() {
@@ -142,7 +154,8 @@ $(function() {
                     translate = "translate(" + transform_factor + "," + transform_factor + ")";
                     scale =  "scale(" + d[1]+ ")"; 
                     return translate + " " +  scale
-                }).attr("fill", function(d) { return d3.hsl(d[0], 1, 0.5) });
+                }).attr("fill", function(d) { return d[0]});
+                //return d3.hsl(d[0], 1, 0.5) });
 
             d3.select("text").text(month);   
 
@@ -174,7 +187,23 @@ d3.json("/us.json", function(error, topology) {
 
 
 // This is a modified version of the circular heat chart at http://prcweb.co.uk/lab/circularheat/
+//loadData(function(){
 var chart_data = [];
+/*
+for (var ci in cities){
+    for (var mo = 1; mo < 13; mo++){
+        var avg_color = 0;
+        console.log(data["boston"][1])
+        city_data = getMonthData(cities[ci], mo);
+        ci_aggregate = city_data.aggregate
+        for (var hue in ci_aggregate.hues){
+            avg_color += hue * ci_aggregate.hues[hue]["percentage"];
+            
+        };
+        var new_hue = d3.hsl(avg_color, 0.75, 0.5);
+        chart_data.push(new_hue);
+    }
+};*/
 
 for(var i=0; i<(5*12); i++) chart_data[i] = Math.random();
 
@@ -190,7 +219,7 @@ d3.select('#mostFreqColors')
     .enter()
     .append('svg')
     .call(chart);
-
+//});
 </script>
 </body>
 </html>
