@@ -4,7 +4,6 @@
 <title>Visualization of shit</title>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
-<script src="/circularHeatChart.js" charset="utf-8"></script>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="http://underscorejs.org/underscore-min.js"></script>
 <script src="nv.d3.min.js"></script>
@@ -33,6 +32,7 @@ body {
 
 #chart svg {
   height: 500px;
+  width: 400px;
   min-width: 200px;
   min-height: 100px;
 /*
@@ -45,7 +45,6 @@ body {
 }
 #chart {
   margin-top: 200px;
-  margin-left: 100px;
 }
 
 </style>
@@ -79,23 +78,7 @@ body {
     </div>
 </div>
 
-<div id="viztest">
-    <div id="reference">
-        <h2>Reference Hues</h1>
-        <svg id="test2" class="mypiechart"></svg>
-    </div>
 
-    
-    <div id="dataviztest">
-        <h2>Full Aggregate</h1>
-    </div>
-
-
-    <div id="chart" >
-        <svg style="height: 500px;"></svg>
-    </div>
-
-</div>
 
 
 
@@ -144,9 +127,7 @@ function loadData(callback) {
 
             
         });
-    });
-
-     
+    });   
 };
 
 function getRefMonthData(city, month) {
@@ -229,6 +210,7 @@ function displayTempLine(city, month) {
 
         d3.select('#chart svg')
             .datum(tempData(city))
+            .transition()
             .call(chart1);
 
         nv.utils.windowResize(chart1.update);
@@ -261,7 +243,10 @@ function drawAggregateChart(city, month, div) {
     }
     var svg = d3.select(putdiv).append("svg")
         .attr("width", 600)
-        .attr("height", 600);
+        .attr("height", 600)
+        .on("click", function() {
+            window.location.href = "city.html?city=" + city
+        });
 
     var g = svg.selectAll("g")
         .data(hue_data)
@@ -272,6 +257,16 @@ function drawAggregateChart(city, month, div) {
         .attr("cx", 10)
         .attr("cy", 10)
         .attr("r", size)
+        .attr("transform", function(d) { 
+            scaling_factor = d[1];
+            transform_factor = -(10 * scaling_factor - 1)
+
+            // Translates and scales the circles so that they're concentric
+            translate = "translate(" + transform_factor + "," + transform_factor + ")";
+            scale =  "scale(" + d[1]+ ")"; 
+            return translate + " " +  scale 
+        })
+        .attr("fill", function(d) { return d[0]});
 
     svg.append("text").attr("id", "month_label")
         .attr("x", 175).attr("y", 75)    
@@ -301,7 +296,6 @@ function updateReferenceChart(city, month, div) {
     }
     
     var selector = putdiv + " svg circle"
-    console.log(selector)
     var circle = d3.selectAll(selector).data(hue_data)
 
     circle.transition()
@@ -365,19 +359,18 @@ $(function() {
 
         updateDelay = 2000
         // then it updates every updateDelay ms
-        setInterval(function() {
-            month = month > 12 ? 1 : month;
-            new_data = getMonthData("boston", month);
-            addReferencePieChart("boston", month);
+        // setInterval(function() {
+        //     month = month > 12 ? 1 : month;
+        //     new_data = getMonthData("boston", month);
+        //     addReferencePieChart("boston", month);
 
-            updateReferenceChart("boston", month)  // FULL SIZE VERSION
-            _.each(cities, function(city, index) {
-                console.log(city, index)
-                updateReferenceChart(city, month, index);
-            });
+        //     updateReferenceChart("boston", month)  // FULL SIZE VERSION
+        //     _.each(cities, function(city, index) {
+        //         updateReferenceChart(city, month, index);
+        //     });
 
-            month++;
-        }, updateDelay);   
+        //     month++;
+        // }, updateDelay);   
 
         displayTempLine("boston", 1)
      });
