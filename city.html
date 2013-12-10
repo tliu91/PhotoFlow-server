@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Visualization of shit</title>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="underscore-min.js"></script>
+<script src="nv.d3.min.js"></script>
+<link href="nv.d3.css" rel="stylesheet" type="text/css">
+
+<style>
+
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#wrapper{width:1500; overflow: hidden;position:relative;}
+#viztest{overflow:hidden;}
+#reference{width: 600px; height:600px;float:left; overflow:hidden;}
+#dataviztest{width: 400px; height:600px; float:left; overflow:hidden;}
+
+#chart {
+	display: inline-block;
+}
+
+#chart svg {
+  height: 500px;
+  width: 400px;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+	<div id="wrapper">
+		<h1 id="cityTitle"></h1>
+		<div id="controls">
+			<input type="button" id="animate" value="Animate"></input>
+		</div>
+		<div id="viztest">
+
+    		<div id="reference">
+        		<h2>Reference Hues</h1>
+	        	<svg id="test2" class="mypiechart"></svg>
+	    	</div>
+
+	    
+		    <div id="dataviztest">
+		        <h2>Full Aggregate</h1>
+		    </div>
+
+
+		    <div id="chart" >
+		    	<h2> Temperature </h2>
+		        <svg></svg>
+		    </div>
+
+		</div>
+
+	</div>
+
+	<script type="text/javascript">
+
+		// Constants
+		var city;
+		var cities = ["boston", "chicago", "dc", "houston", "la", "minneapolis", "seattle"]
+		var cityTitles = ["Boston", "Chicago", "Washington, D.C.", "Los Angeles", "Minneapolis", "Seattle"]
+		var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+
+		var refHueNames = [ "Red", "Red-Yellows", "Yellows", "Yellow-Greens", "Greens", 
+		    "Green-Cyans", "Cyans", "Cyan-Blues", "Blues", "Blue-Magentas", "Magentas", 
+		    "Magenta-Reds"];
+
+		var temp = {
+		    "boston" : {"1":27,"2":30,"3":39,"4":50,"5":59,"6":67,"7":77,"8":74,"9":67,"10":57,"11":50,"12":40}, 
+		    "chicago" : {"1":21,"2":27,"3":37,"4":48,"5":59,"6":70,"7":80,"8":74,"9":63,"10":55,"11":45,"12":35},
+		    "dc" : {"1":33,"2":41,"3":45,"4":58,"5":68,"6":79,"7":84,"8":80,"9":71,"10":58,"11":52,"12":45},
+		    "houston" : {"1":51,"2":55,"3":66,"4":75,"5":78,"6":86,"7":87,"8":90,"9":83,"10":71,"11":63,"12":54},
+		    "la" : {"1":59,"2":55,"3":60,"4":64,"5":64,"6":66,"7":72,"8":72,"9":70,"10":67,"11":60,"12":54},
+		    "minneapolis" : {"1":11,"2":18,"3":28,"4":45,"5":57,"6":67,"7":77,"8":71,"9":61,"10":53,"11":37,"12":27},
+		    "seattle" : {"1":41,"2":39,"3":45,"4":46,"5":53,"6":59,"7":64,"8":65,"9":63,"10":52,"11":42,"12":39}
+		}
+
+		var data = {}
+
+		function loadData(callback) {
+		    counter = 0
+		     _.each(cities, function(city) {
+		        data[city] = {} // omg fuck javascript and their stupid associative arrays
+		        _.each(_.range(1, 13), function(month) {
+		            month_string = month < 10 ? "0" + month : month;
+		            date = "2011-" + month_string + "-01";
+		            month_path = "imageanalysis/out/" + city + "/" + date + ".json"
+
+		            $.getJSON(month_path, function(json) {
+		                data[city][month] = json
+		                counter++;
+
+		                if (counter == cities.length * 12) {
+		                    callback();
+		                }
+		            });
+
+		            
+		        });
+		    });   
+		};
+
+		function getRefMonthData(city, month) {
+		    var hue_data =[];
+		    var tot_hue_perc = 0;
+		    // gets the reference data and makes the comparison target thing
+		    month_data = data[city][month]
+
+		    reference = month_data.ref_aggregate
+		    for (var hue in reference.hues){
+		        hue_data.push({"hue" : hue, "percent" : reference.hues[hue].percentage}); 
+		    }; 
+
+		    return hue_data;
+		}
+
+		function getMonthData(city, month) {
+		    // gets the reference data and makes the comparison target thing
+		    month_data = data[city][month]
+
+		    // gets average color for every aggregated hue
+		    var agg_hue_data = [];
+		    var agg_hue_perc = 0;
+		    aggregate = month_data.aggregate
+		    for (var hue in aggregate.hues){
+		        var avg_light = aggregate["hues"][hue]["total_light"] / aggregate["hues"][hue]["count"];
+		        var avg_sat = aggregate["hues"][hue]["total_sat"] / aggregate["hues"][hue]["count"];
+		        var avg_hue = d3.hsl(hue, 0.75, 0.5);
+		        agg_hue_data.push([avg_hue, 1 - agg_hue_perc]);
+		        agg_hue_perc += aggregate.hues[hue]["percentage"];
+		    };
+
+		    return agg_hue_data;
+		};
+
+		function tempData(city) {
+		  var sin = [];
+
+		  for (var i = 0; i < 100; i++) {
+		    sin.push({x: i, y: i % 10 == 5 ? null : Math.sin(i/10) });
+		  }
+
+
+		    temp_data = []
+		    _.each(temp[city], function(info, key) {
+		        temp_data.push({x: monthNames[parseInt(key) - 1], y: info})
+		    });
+
+		  return [
+		    {
+		      values: temp_data,
+		      key: "Temperature",
+		      color: "red"
+		    },
+		  ];
+		}
+
+		function displayTempLine(city, month) {
+
+		    nv.addGraph(function() {
+		        chart1 = nv.models.lineChart()
+		        .options({
+		        margin: {left: 100, bottom: 100},
+		        x: function(d,i) { return i},
+		        showXAxis: true,
+		        showYAxis: true,
+		        transitionDuration: 250
+		    })
+		    ;
+
+		        // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
+		        chart1.xAxis
+		            .axisLabel("Month")
+		            .tickFormat(function(d) { return monthNames[d];});
+
+		        chart1.yAxis
+		            .axisLabel('Temp')
+		            .tickFormat(d3.format('d'))
+		        ;
+
+		        d3.select('#chart svg')
+		            .datum(tempData(city))
+		            .transition()
+		            .call(chart1);
+
+		        nv.utils.windowResize(chart1.update);
+
+		        return chart1;
+		    });
+
+		}		
+
+		function drawAggregateChart(city, month, div) {
+		    hue_data = getMonthData(city, month);
+
+		    // variables for the full aggregate data viz
+		    var putdiv = "#dataviztest"
+		    var size = 150;
+		    loc = [150,230];
+
+		    // variables for the smaller aggregate data viz on map
+		    if (div < 7){
+		        size = 50;
+		        loc= [50,50];
+		        if (div == 0){putdiv = "#bostondataviz";}
+		        else if (div == 1){putdiv = "#chicagodataviz";}
+		        else if (div == 2){putdiv = "#dcdataviz";}
+		        else if (div == 3){putdiv = "#houstondataviz";}
+		        else if (div == 4){putdiv = "#ladataviz";}
+		        else if (div == 5){putdiv = "#minneapolisdataviz";}
+		        else {putdiv = "#seattledataviz";}
+		        
+		    }
+		    var svg = d3.select(putdiv).append("svg")
+		        .attr("width", 600)
+		        .attr("height", 600)
+		        .on("click", function() {
+		            window.location.href = "city.html?city=" + city
+		        });
+
+		    var g = svg.selectAll("g")
+		        .data(hue_data)
+		        .enter().append("g")
+		        .attr("transform", "translate(" + loc + ")"); // change this to move position of circles within div
+
+		    g.append("circle")
+		        .attr("cx", 10)
+		        .attr("cy", 10)
+		        .attr("r", size)
+		        .attr("transform", function(d) { 
+		            scaling_factor = d[1];
+		            transform_factor = -(10 * scaling_factor - 1)
+
+		            // Translates and scales the circles so that they're concentric
+		            translate = "translate(" + transform_factor + "," + transform_factor + ")";
+		            scale =  "scale(" + d[1]+ ")"; 
+		            return translate + " " +  scale 
+		        })
+		        .attr("fill", function(d) { return d[0]});
+
+		    svg.append("text").attr("id", "month_label")
+		        .attr("x", 175).attr("y", 75)    
+
+		}
+
+		function updateAggregateChart(city, month, div) {
+		    hue_data = getMonthData(city, month);
+
+		    // variables for the full aggregate data viz
+		    var putdiv = "#dataviztest"
+		    var size = 100;
+		    loc = [200,200];
+
+		    // variables for the smaller aggregate data viz on map
+		    if (div < 7){
+		        size = 50;
+		        loc= [50,50];
+		        if (div == 0){putdiv = "#bostondataviz";}
+		        else if (div == 1){putdiv = "#chicagodataviz";}
+		        else if (div == 2){putdiv = "#dcdataviz";}
+		        else if (div == 3){putdiv = "#houstondataviz";}
+		        else if (div == 4){putdiv = "#ladataviz";}
+		        else if (div == 5){putdiv = "#minneapolisdataviz";}
+		        else {putdiv = "#seattledataviz";}
+		        
+		    }
+		    
+		    var selector = putdiv + " svg circle"
+		    var circle = d3.selectAll(selector).data(hue_data)
+
+		    circle.transition()
+		        .attr("transform", function(d) { 
+		            scaling_factor = d[1];
+		            transform_factor = -(10 * scaling_factor - 1)
+
+		            // Translates and scales the circles so that they're concentric
+		            translate = "translate(" + transform_factor + "," + transform_factor + ")";
+		            scale =  "scale(" + d[1]+ ")"; 
+		            return translate + " " +  scale 
+		        })
+		        .attr("fill", function(d) { return d[0]});
+
+		    var text = d3.selectAll("#month_label").text(monthNames[month - 1])
+		};
+
+		// Creates pie chart
+		function addReferencePieChart(city, month) {
+		    nv.addGraph(function() {
+		        var width = 500,
+		            height = 500;
+
+		        ref_data = getRefMonthData("boston", month);
+		        var chart = nv.models.pieChart()
+		            .x(function(d) { return refHueNames[d.hue / 30]  })
+		            .y(function(d) { return d.percent * 100})
+		            .color(function(d) { return d3.hsl(d.data.hue, 0.5, 0.5) })
+		            .width(width)
+		            .height(height)
+		            .showLegend(false);
+
+		          d3.select("#test2")
+		              .datum(ref_data)
+		            .transition()
+		              .attr('width', width)
+		              .attr('height', height)
+		              .call(chart);
+
+		        return chart;
+		    });
+		}
+		function getQueryVariable(variable) {
+		    var query = window.location.search.substring(1);
+		    var vars = query.split('&');
+		    for (var i = 0; i < vars.length; i++) {
+		        var pair = vars[i].split('=');
+		        if (decodeURIComponent(pair[0]) == variable) {
+		            return decodeURIComponent(pair[1]);
+		        }
+		    }
+		    console.log('Query variable %s not found', variable);
+		}
+
+		function addAnimateHandler() {
+			$("#animate").click(function() {
+				text =  $(this).attr("value") == "Animate" ? "Pause" : "Animate";
+				$(this).attr("value", text);
+				animate = !animate;
+			});
+		};
+
+		city = getQueryVariable("city");
+		var animate = false;
+
+		$(function() {
+			$("#cityTitle").text(cityTitles[cities.indexOf(city)]);
+			addAnimateHandler();
+
+		    loadData(function() {
+		        month = 1
+
+		        drawAggregateChart(city, month, 20);
+		        addReferencePieChart(city, month)
+		        displayTempLine(city, 1)
+
+
+		        updateDelay = 1000
+		        setInterval(function() {
+		        	if (animate) {
+			            month = month > 12 ? 1 : month;
+			            new_data = getMonthData(city, month);
+			            addReferencePieChart(city, month);
+			            updateAggregateChart(city, month)  
+
+			            month++;		        		
+		        	}
+		        }, updateDelay);   
+
+		     });
+
+		});
+
+
+
+	</script>
+
+</body>
+
+</html>
