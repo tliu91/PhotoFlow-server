@@ -65,6 +65,27 @@ h2{
     
 <h1>PhotoFlow</h1>
 <h2 id="curr-month">January </h2>
+<div id="controls">
+    <div class="btn-group col-md-offset-5" data-toggle="buttons">
+        <label class="btn btn-primary active">
+            <input type="radio" name="satOptions" value=true> 75% Saturation
+        </label>
+        <label class="btn btn-primary">
+            <input type="radio" name="satOptions" value=false> Average Saturation
+        </label>
+    </div>
+
+    <div class="btn-group col-md-offset" data-toggle="buttons">
+        <label class="btn btn-primary active">
+            <input type="radio" name="lightOptions" value=true> 50% Light
+        </label>
+        <label class="btn btn-primary">
+            <input type="radio" name="lightOptions" value=false> Average Light
+        </label>
+    </div>
+
+</div>
+
 <div id="wrapper">
 
     <div id="nation"></div>
@@ -167,7 +188,11 @@ function getMonthData(city, month) {
     for (var hue in aggregate.hues){
         var avg_light = aggregate["hues"][hue]["total_light"] / aggregate["hues"][hue]["count"];
         var avg_sat = aggregate["hues"][hue]["total_sat"] / aggregate["hues"][hue]["count"];
-        var avg_hue = d3.hsl(hue, 0.75, 0.5);
+
+        sat = defaultSat == true ? 0.75 : avg_sat;
+        light = defaultLight == true ? 0.5 : avg_light;
+
+        var avg_hue = d3.hsl(hue, sat, light);
         agg_hue_data.push([avg_hue, 1 - agg_hue_perc]);
         agg_hue_perc += aggregate.hues[hue]["percentage"];
     };
@@ -375,12 +400,32 @@ function drawNation(month){
 };
 
 
-
+var defaultSat = true; 
+var defaultLight = true;
 // ----------- Entry point ----------
 $(function() {
+
+    // takes care of radio buttons that show different light options
+    $("input[name='satOptions']").change(function() {
+        value = $(this).val();
+        defaultSat = (value === 'true')
+        for (city in cities){
+            updateReferenceChart(cities[city], month, city);
+        }
+    });
+
+    $("input[name='lightOptions']").change(function() {
+        value = $(this).val();
+        defaultLight = (value === 'true')
+        for (city in cities){
+            updateReferenceChart(cities[city], month, city);
+        }
+    });
+
     // First we load all the data and do all the things we need the data for (chart drawing) in the callback
     loadData(function() {
         month = 1
+        
         drawNation(month);
         // This is the first display
         drawAggregateChart("boston", month, 20);
@@ -391,77 +436,89 @@ $(function() {
             displayReferenceChart(cities[city], month);
         }*/
 
-        // YAY BUTTONS
+        // YAY MONTH BUTTONS
         $("#janbutt").click(function(){
             $("#curr-month").text("January");
+            month = 1;
             for (city in cities){
-                updateReferenceChart(cities[city], 1, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#febbutt").click(function(){
+            month = 2;
             $("#curr-month").text("February");
             for (city in cities){
-                updateReferenceChart(cities[city], 2, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#marbutt").click(function(){
+            month = 3;
             $("#curr-month").text("March");
             for (city in cities){
-                updateReferenceChart(cities[city], 3, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#aprbutt").click(function(){
+            month = 4;
             $("#curr-month").text("April");
             for (city in cities){
-                updateReferenceChart(cities[city], 4, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#maybutt").click(function(){
+            month = 5;
             $("#curr-month").text("May");
             for (city in cities){
-                updateReferenceChart(cities[city], 5, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#junbutt").click(function(){
+            month = 6; 
             $("#curr-month").text("June");
             for (city in cities){
-                updateReferenceChart(cities[city], 6, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#julbutt").click(function(){
+            month = 7; 
             $("#curr-month").text("July");
             for (city in cities){
-                updateReferenceChart(cities[city], 7, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#augbutt").click(function(){
+            month = 8; 
             $("#curr-month").text("August");
             for (city in cities){
-                updateReferenceChart(cities[city], 8, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#sepbutt").click(function(){
+            month = 9; 
             $("#curr-month").text("September");
             for (city in cities){
-                updateReferenceChart(cities[city], 9, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#octbutt").click(function(){
+            month = 10; 
             $("#curr-month").text("October");
             for (city in cities){
-                updateReferenceChart(cities[city], 10, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#novbutt").click(function(){
+            month = 11;
             $("#curr-month").text("November");
             for (city in cities){
-                updateReferenceChart(cities[city], 11, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
         $("#decbutt").click(function(){
+            month = 12;
             $("#curr-month").text("December");
             for (city in cities){
-                updateReferenceChart(cities[city], 12, city);
+                updateReferenceChart(cities[city], month, city);
             }
         });
 
@@ -479,7 +536,7 @@ $(function() {
 
         //     month++;
         // }, updateDelay);   
-
+        
         displayTempLine("boston", 1)
      });
 
