@@ -6,30 +6,34 @@
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="http://underscorejs.org/underscore-min.js"></script>
+<script src="underscore-min.js"></script>
 <script src="nv.d3.min.js"></script>
 <link href="nv.d3.css" rel="stylesheet" type="text/css">
 
 <style>
 
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 #wrapper{width:1500; overflow: hidden;position:relative;}
 #viztest{overflow:hidden;}
 #reference{width: 600px; height:600px;float:left; overflow:hidden;}
-#dataviztest{width: 600px; height:600px; float:left; overflow:hidden;}
+#dataviztest{width: 400px; height:600px; float:left; overflow:hidden;}
+
+#chart {
+	display: inline-block;
+}
 
 #chart svg {
   height: 500px;
   width: 400px;
-  min-width: 200px;
-  min-height: 100px;
-}
-#chart {
-  margin-top: 200px;
 }
 
-#cityTitle {
+h1, h2 {
   text-align: center;
 }
+
 
 </style>
 
@@ -53,7 +57,8 @@
 
 
 		    <div id="chart" >
-		        <svg style="height: 500px;"></svg>
+		    	<h2> Temperature </h2>
+		        <svg></svg>
 		    </div>
 
 		</div>
@@ -201,8 +206,8 @@
 
 		    // variables for the full aggregate data viz
 		    var putdiv = "#dataviztest"
-		    var size = 100;
-		    loc = [200,200];
+		    var size = 150;
+		    loc = [150,230];
 
 		    // variables for the smaller aggregate data viz on map
 		    if (div < 7){
@@ -340,20 +345,16 @@
 		        displayTempLine(city, 1)
 
 
-		        // updateDelay = 2000
-		        // then it updates every updateDelay ms
-		        // setInterval(function() {
-		        //     month = month > 12 ? 1 : month;
-		        //     new_data = getMonthData("boston", month);
-		        //     addReferencePieChart("boston", month);
+		        updateDelay = 1000
+		        setInterval(function() {
+		            month = month > 12 ? 1 : month;
+		            new_data = getMonthData(city, month);
+		            addReferencePieChart(city, month);
 
-		        //     updateReferenceChart("boston", month)  // FULL SIZE VERSION
-		        //     _.each(cities, function(city, index) {
-		        //         updateReferenceChart(city, month, index);
-		        //     });
+		            updateReferenceChart(city, month)  // FULL SIZE VERSION
 
-		        //     month++;
-		        // }, updateDelay);   
+		            month++;
+		        }, updateDelay);   
 
 		     });
 
