@@ -15,9 +15,15 @@
 <link rel="stylesheet" href="/resources/demos/style.css">
 
 <style>
+
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	margin: 2%;
+}
+
+h2{
+    text-align: 0 auto;
+    font: normal 20px arial, sans-serif;
 }
 
 .cityviz{width:150px; height:150px; float:left; position:absolute;}
@@ -29,7 +35,7 @@ body {
 #houstondataviz{left:400px; top:300px;}
 #ladataviz{left:100px; top:180px;}
 #minneapolisdataviz{left:450px; top:20px;}
-#seattledataviz{left:100px; top:-25px;}
+#seattledataviz{left:100px; top:-18px;}
 
 #viztest{overflow:hidden;}
 #reference{width: 600px; height:600px;float:left; overflow:hidden;}
@@ -61,6 +67,8 @@ button{
 
 <body>
     
+<h1>PhotoFlow</h1>
+<h2 id="curr-month">January </h2>
 <div id="wrapper">
 
     <div id="nation"></div>
@@ -88,6 +96,7 @@ button{
 </div>
 
 <div id="button-wrapper">
+    <p>Please select the month you want to see, or click on a city to see more details!</p>
     <button id="janbutt">January</button>
     <button id="febbutt">February</button>
     <button id="marbutt">March</button>
@@ -125,7 +134,7 @@ var temp = {
     "seattle" : {"1":41,"2":39,"3":45,"4":46,"5":53,"6":59,"7":64,"8":65,"9":63,"10":52,"11":42,"12":39}
 }
 
-
+var curr_month = "January";
 var data = {}
 
 function loadData(callback) {
@@ -396,68 +405,81 @@ $(function() {
             displayReferenceChart(cities[city], month);
         }*/
 
+        // YAY BUTTONS
         $("#janbutt").click(function(){
+            $("#curr-month").text("January");
             for (city in cities){
                 updateReferenceChart(cities[city], 1, city);
             }
         });
         $("#febbutt").click(function(){
+            $("#curr-month").text("February");
             for (city in cities){
                 updateReferenceChart(cities[city], 2, city);
             }
         });
         $("#marbutt").click(function(){
+            $("#curr-month").text("March");
             for (city in cities){
                 updateReferenceChart(cities[city], 3, city);
             }
         });
         $("#aprbutt").click(function(){
+            $("#curr-month").text("April");
             for (city in cities){
                 updateReferenceChart(cities[city], 4, city);
             }
         });
         $("#maybutt").click(function(){
+            $("#curr-month").text("May");
             for (city in cities){
                 updateReferenceChart(cities[city], 5, city);
             }
         });
         $("#junbutt").click(function(){
+            $("#curr-month").text("June");
             for (city in cities){
                 updateReferenceChart(cities[city], 6, city);
             }
         });
         $("#julbutt").click(function(){
+            $("#curr-month").text("July");
             for (city in cities){
                 updateReferenceChart(cities[city], 7, city);
             }
         });
         $("#augbutt").click(function(){
+            $("#curr-month").text("August");
             for (city in cities){
                 updateReferenceChart(cities[city], 8, city);
             }
         });
         $("#sepbutt").click(function(){
+            $("#curr-month").text("September");
             for (city in cities){
                 updateReferenceChart(cities[city], 9, city);
             }
         });
         $("#octbutt").click(function(){
+            $("#curr-month").text("October");
             for (city in cities){
                 updateReferenceChart(cities[city], 10, city);
             }
         });
         $("#novbutt").click(function(){
+            $("#curr-month").text("November");
             for (city in cities){
                 updateReferenceChart(cities[city], 11, city);
             }
         });
         $("#decbutt").click(function(){
+            $("#curr-month").text("December");
             for (city in cities){
                 updateReferenceChart(cities[city], 12, city);
             }
         });
 
-        updateDelay = 2000
+        //updateDelay = 2000
         // then it updates every updateDelay ms
         // setInterval(function() {
         //     month = month > 12 ? 1 : month;
