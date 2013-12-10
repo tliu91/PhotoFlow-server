@@ -362,7 +362,7 @@ function addReferencePieChart(city, month) {
 
 
 // nation visualization
-function drawNation(){
+function drawNation(month){
     var path = d3.geo.path();
 
     var svg = d3.select("#nation").append("svg")
@@ -375,7 +375,7 @@ function drawNation(){
             .attr("d", path);
     });
     for (city in cities){
-        drawAggregateChart(cities[city], 1, city);
+        drawAggregateChart(cities[city], month, city);
     }
 };
 
@@ -385,8 +385,8 @@ function drawNation(){
 $(function() {
     // First we load all the data and do all the things we need the data for (chart drawing) in the callback
     loadData(function() {
-        drawNation();
         month = 1
+        drawNation(month);
         // This is the first display
         drawAggregateChart("boston", month, 20);
         addReferencePieChart("boston", month)
@@ -395,6 +395,67 @@ $(function() {
         /*for (var city in cities){
             displayReferenceChart(cities[city], month);
         }*/
+
+        $("#janbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 1, city);
+            }
+        });
+        $("#febbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 2, city);
+            }
+        });
+        $("#marbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 3, city);
+            }
+        });
+        $("#aprbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 4, city);
+            }
+        });
+        $("#maybutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 5, city);
+            }
+        });
+        $("#junbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 6, city);
+            }
+        });
+        $("#julbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 7, city);
+            }
+        });
+        $("#augbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 8, city);
+            }
+        });
+        $("#sepbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 9, city);
+            }
+        });
+        $("#octbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 10, city);
+            }
+        });
+        $("#novbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 11, city);
+            }
+        });
+        $("#decbutt").click(function(){
+            for (city in cities){
+                updateReferenceChart(cities[city], 12, city);
+            }
+        });
 
         updateDelay = 2000
         // then it updates every updateDelay ms
