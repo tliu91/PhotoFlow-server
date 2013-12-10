@@ -9,6 +9,11 @@
 <script src="nv.d3.min.js"></script>
 <link href="nv.d3.css" rel="stylesheet" type="text/css">
 
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css">
+
 <style>
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -17,7 +22,7 @@ body {
 
 .cityviz{width:150px; height:150px; float:left; position:absolute;}
 #wrapper{width:1500;overflow: hidden;position:relative;}
-#nation{width:1000px; height:700px; float:left; fill:#ccc; position: relative; z-index:-1;}
+#nation{width:1000px; height:550px; float:left; fill:#ccc; position: relative; z-index:-1;}
 #bostondataviz{left: 700px; top: 100px;}
 #chicagodataviz{left:550px; top:100px;}
 #dcdataviz{left:700px; top:200px;}
@@ -45,6 +50,10 @@ body {
 }
 #chart {
   margin-top: 200px;
+}
+
+button{
+    width:75px;
 }
 
 </style>
@@ -78,8 +87,20 @@ body {
     </div>
 </div>
 
-
-
+<div id="button-wrapper">
+    <button id="janbutt">January</button>
+    <button id="febbutt">February</button>
+    <button id="marbutt">March</button>
+    <button id="aprbutt">April</button>
+    <button id="maybutt">May</button>
+    <button id="junbutt">June</button>
+    <button id="julbutt">July</button>
+    <button id="augbutt">August</button>
+    <button id="sepbutt">September</button>
+    <button id="octbutt">October</button>
+    <button id="novbutt">November</button>
+    <button id="decbutt">December</button>
+</div>
 
 
 
@@ -251,7 +272,7 @@ function drawAggregateChart(city, month, div) {
     var g = svg.selectAll("g")
         .data(hue_data)
         .enter().append("g")
-        .attr("transform", "translate(" + loc + ")"); // change this to move position of circles within div
+        .attr("transform", "translate(" + loc + ")"); 
 
     g.append("circle")
         .attr("cx", 10)
@@ -340,6 +361,24 @@ function addReferencePieChart(city, month) {
 }
 
 
+// nation visualization
+function drawNation(){
+    var path = d3.geo.path();
+
+    var svg = d3.select("#nation").append("svg")
+        .attr("width", 960)
+        .attr("height", 500);
+
+    d3.json("/us.json", function(error, topology) {
+        svg.append("path")
+            .datum(topojson.feature(topology, topology.objects.land))
+            .attr("d", path);
+    });
+    for (city in cities){
+        drawAggregateChart(cities[city], 1, city);
+    }
+};
+
 
 
 // ----------- Entry point ----------
@@ -379,28 +418,6 @@ $(function() {
 
 });
 
-
-
-
-
-
-// nation visualization
-function drawNation(){
-    var path = d3.geo.path();
-
-    var svg = d3.select("#nation").append("svg")
-        .attr("width", 960)
-        .attr("height", 500);
-
-    d3.json("/us.json", function(error, topology) {
-        svg.append("path")
-            .datum(topojson.feature(topology, topology.objects.land))
-            .attr("d", path);
-    });
-    for (city in cities){
-        drawAggregateChart(cities[city], 1, city);
-    }
-};
 
 
 </script>
