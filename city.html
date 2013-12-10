@@ -7,7 +7,7 @@
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="underscore-min.js"></script>
-<script src="nv.d3.min.js"></script>
+<script src="nv.d3.js"></script>
 <link href="nv.d3.css" rel="stylesheet" type="text/css">
 
 <style>
@@ -49,6 +49,7 @@ h1, h2 {
 		<h1 id="cityTitle"></h1>
 		<div id="controls">
 			<input type="button" id="animate" value="Animate"></input>
+			<input type="button" id="reset" value="Reset"></input>
 			<h2 id="month_label"></h2>
 		</div>
 		<div id="viztest">
@@ -185,6 +186,7 @@ h1, h2 {
 		        showXAxis: true,
 		        showYAxis: true,
 		        transitionDuration: 250, 
+		        useInteractiveGuideline: true, 
 		    })
 		    ;
 
@@ -195,7 +197,7 @@ h1, h2 {
 
 		        chart1.yAxis
 		            .axisLabel('Temp')
-		            .tickFormat(function(d) {return d3.format('d')(d) + "F"; })
+		            .tickFormat(function(d) {return d3.format('d')(d) + " F"; })
 		        ;
 
 		        d3.select('#chart svg')
@@ -204,6 +206,12 @@ h1, h2 {
 		            .call(chart1);
 
 		        nv.utils.windowResize(chart1.update);
+
+		        chart1.dispatch.on('fuckyou', function(state) {
+		        	month = state[0].index + 1;
+		        	console.log(month)
+		        	setMonth(month);
+		        });
 
 		        return chart1;
 		    });
@@ -334,6 +342,13 @@ h1, h2 {
 		    console.log('Query variable %s not found', variable);
 		}
 
+		function setMonth(month) {
+			updateAggregateChart(city, month);
+			addReferencePieChart(city, month);
+			displayTempLine(city, month)	
+			$("#month_label").text(monthNames[month-1])
+		}
+
 		function addAnimateHandler() {
 			$("#animate").click(function() {
 				text =  $(this).attr("value") == "Animate" ? "Pause" : "Animate";
@@ -341,6 +356,13 @@ h1, h2 {
 				animate = !animate;
 			});
 		};
+
+		function addResetHandler() {
+			$("#reset").click(function() {
+				month = 1;
+				setMonth(1);
+			});
+		}
 
 		city = getQueryVariable("city");
 		var animate = false;
@@ -350,6 +372,7 @@ h1, h2 {
 			$("#cityTitle").text(cityTitles[cities.indexOf(city)]);
 			$("#month_label").text(monthNames[month-1])
 			addAnimateHandler();
+			addResetHandler();
 
 		    loadData(function() {
 		        drawAggregateChart(city, month, 20);
