@@ -12,10 +12,11 @@ $(function () {
 		url: 'out/match.json',
 		success: function (locations) {
 			_.each(locations, function (photos, location) {
-				document.write(location + '<br>');
+				document.write('<div style="clear:both"><h1>' + location + '</h1>');
 				_.each(photos, function (photo) {
-					document.write('<img src="' + photo.url + '" /><br>');
+					document.write('<img src="' + photo.url + '" style="width: 100px; float: left;" />');
 				});
+				document.write('</div>');
 			});
 		}
 	});
