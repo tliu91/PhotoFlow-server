@@ -34,6 +34,10 @@ h1, h2 {
   text-align: center;
 }
 
+#month_label {;
+	text-align: center;
+}
+
 
 </style>
 
@@ -45,22 +49,23 @@ h1, h2 {
 		<h1 id="cityTitle"></h1>
 		<div id="controls">
 			<input type="button" id="animate" value="Animate"></input>
+			<h2 id="month_label"></h2>
 		</div>
 		<div id="viztest">
 
     		<div id="reference">
-        		<h2>Reference Hues</h1>
+        		<h3>Reference Hues</h3>
 	        	<svg id="test2" class="mypiechart"></svg>
 	    	</div>
 
 	    
 		    <div id="dataviztest">
-		        <h2>Full Aggregate</h1>
+		        <h3>Full Aggregate</h3>
 		    </div>
 
 
 		    <div id="chart" >
-		    	<h2> Temperature </h2>
+		    	<h3> Temperature </h3>
 		        <svg></svg>
 		    </div>
 
@@ -252,10 +257,6 @@ h1, h2 {
 		            return translate + " " +  scale 
 		        })
 		        .attr("fill", function(d) { return d[0]});
-
-		    svg.append("text").attr("id", "month_label")
-		        .attr("x", 175).attr("y", 75)    
-
 		}
 
 		function updateAggregateChart(city, month, div) {
@@ -294,8 +295,6 @@ h1, h2 {
 		            return translate + " " +  scale 
 		        })
 		        .attr("fill", function(d) { return d[0]});
-
-		    var text = d3.selectAll("#month_label").text(monthNames[month - 1])
 		};
 
 		// Creates pie chart
@@ -345,14 +344,14 @@ h1, h2 {
 
 		city = getQueryVariable("city");
 		var animate = false;
+		var month = 1
 
 		$(function() {
 			$("#cityTitle").text(cityTitles[cities.indexOf(city)]);
+			$("#month_label").text(monthNames[month-1])
 			addAnimateHandler();
 
 		    loadData(function() {
-		        month = 1
-
 		        drawAggregateChart(city, month, 20);
 		        addReferencePieChart(city, month)
 		        displayTempLine(city, 1)
@@ -365,6 +364,8 @@ h1, h2 {
 			            new_data = getMonthData(city, month);
 			            addReferencePieChart(city, month);
 			            updateAggregateChart(city, month)  
+
+            			$("#month_label").text(monthNames[month-1])
 
 			            month++;		        		
 		        	}
