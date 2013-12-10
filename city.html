@@ -183,7 +183,7 @@ h1, h2, h3, h4 {
 		    for (var hue in aggregate.hues){
 		        var avg_light = aggregate["hues"][hue]["total_light"] / aggregate["hues"][hue]["count"];
 		        var avg_sat = aggregate["hues"][hue]["total_sat"] / aggregate["hues"][hue]["count"];
-		        
+
 		        sat = defaultSat == true ? 0.75 : avg_sat;
 		        light = defaultLight == true ? 0.5 : avg_light;
 
@@ -217,7 +217,7 @@ h1, h2, h3, h4 {
 		  ];
 		}
 
-		function displayTempLine(city, month) {
+		function displayTempLine(city) {
 
 		    nv.addGraph(function() {
 		        chart1 = nv.models.lineChart()
@@ -386,7 +386,7 @@ h1, h2, h3, h4 {
 		function setMonth(month) {
 			updateAggregateChart(city, month);
 			addReferencePieChart(city, month);
-			displayTempLine(city, month)	
+			displayTempLine(city)	
 			$("#month_label").text(monthNames[month-1])
 		}
 
@@ -435,7 +435,7 @@ h1, h2, h3, h4 {
 		    loadData(function() {
 		        drawAggregateChart(city, month, 20);
 		        addReferencePieChart(city, month)
-		        displayTempLine(city, 1)
+		        displayTempLine(city)
 
 
 		        updateDelay = 1000
