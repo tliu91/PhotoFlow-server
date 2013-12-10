@@ -38,7 +38,7 @@ body {
 </head>
 
 <body>
-    
+
 
 <div id="viztest">
     <div id="reference">
@@ -46,24 +46,24 @@ body {
         <svg id="test2" class="mypiechart"></svg>
     </div>
 
-    
+
     <div id="dataviztest">
         <h2>Full Aggregate</h1>
     </div>
 
     <div id="months">
-        <div id="viz1" class="monthviz"></div>
-        <div id="viz2" class="monthviz"></div>
-        <div id="viz3" class="monthviz"></div>
-        <div id="viz4" class="monthviz"></div>
-        <div id="viz5" class="monthviz"></div>
-        <div id="viz6" class="monthviz"></div>
-        <div id="viz7" class="monthviz"></div>
-        <div id="viz8" class="monthviz"></div>
-        <div id="viz9" class="monthviz"></div>
-        <div id="viz10" class="monthviz"></div>
-        <div id="viz11" class="monthviz"></div>
-        <div id="viz12" class="monthviz"></div>
+        <div id="viz1" class="monthviz boston"></div>
+        <div id="viz2" class="monthviz boston"></div>
+        <div id="viz3" class="monthviz boston"></div>
+        <div id="viz4" class="monthviz boston"></div>
+        <div id="viz5" class="monthviz boston"></div>
+        <div id="viz6" class="monthviz boston"></div>
+        <div id="viz7" class="monthviz boston"></div>
+        <div id="viz8" class="monthviz boston"></div>
+        <div id="viz9" class="monthviz boston"></div>
+        <div id="viz10" class="monthviz boston"></div>
+        <div id="viz11" class="monthviz boston"></div>
+        <div id="viz12" class="monthviz boston"></div>
     </div>
 
 </div>
@@ -77,12 +77,12 @@ body {
 var cities = ["boston"]
 var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
-var refHueNames = [ "Red", "Red-Yellows", "Yellows", "Yellow-Greens", "Greens", 
-    "Green-Cyans", "Cyans", "Cyan-Blues", "Blues", "Blue-Magentas", "Magentas", 
+var refHueNames = [ "Red", "Red-Yellows", "Yellows", "Yellow-Greens", "Greens",
+    "Green-Cyans", "Cyans", "Cyan-Blues", "Blues", "Blue-Magentas", "Magentas",
     "Magenta-Reds"];
 
 var temp = {
-    "boston" : {"1":27,"2":30,"3":39,"4":50,"5":59,"6":67,"7":77,"8":74,"9":67,"10":57,"11":50,"12":40}, 
+    "boston" : {"1":27,"2":30,"3":39,"4":50,"5":59,"6":67,"7":77,"8":74,"9":67,"10":57,"11":50,"12":40},
     "chicago" : {"1":21,"2":27,"3":37,"4":48,"5":59,"6":70,"7":80,"8":74,"9":63,"10":55,"11":45,"12":35},
     "dc" : {"1":33,"2":41,"3":45,"4":58,"5":68,"6":79,"7":84,"8":80,"9":71,"10":58,"11":52,"12":45},
     "houston" : {"1":51,"2":55,"3":66,"4":75,"5":78,"6":86,"7":87,"8":90,"9":83,"10":71,"11":63,"12":54},
@@ -94,14 +94,15 @@ var temp = {
 
 var data = {}
 
-function loadData(callback) {
-    counter = 0
+function loadData(callback, folder) {
+    folder = folder || 'boston-subset';
+    counter = 0;
     _.each(cities, function(city) {
         data[city] = {} // omg fuck javascript and their stupid associative arrays
         _.each(_.range(1, 13), function(month) {
             month_string = month < 10 ? "0" + month : month;
             date = "2011-" + month_string + "-01";
-            month_path = "imageanalysis/out/boston-subset/" + date + ".json"
+            month_path = "imageanalysis/out/"+folder+"/" + date + ".json"
 
             $.getJSON(month_path, function(json) {
                 data[city][month] = json
@@ -112,12 +113,12 @@ function loadData(callback) {
                 }
             });
 
-            
+
         });
     });
 };
 
-     
+
 
 function getRefMonthData(city, month) {
     var hue_data =[];
@@ -127,8 +128,8 @@ function getRefMonthData(city, month) {
 
     reference = month_data.ref_aggregate
     for (var hue in reference.hues){
-        hue_data.push({"hue" : hue, "percent" : reference.hues[hue].percentage}); 
-    }; 
+        hue_data.push({"hue" : hue, "percent" : reference.hues[hue].percentage});
+    };
 
     return hue_data;
 }
@@ -162,7 +163,7 @@ function displayReferenceChart(city, month, sep_div) {
     loc = [200,200];
 
     if (sep_div){
-        putdiv = "#viz" + month;
+        putdiv = "#viz" + month + "."+city;
         size = 50
         loc = [60,60]
     }
@@ -186,15 +187,15 @@ function displayReferenceChart(city, month, sep_div) {
         .attr("cx", 10)
         .attr("cy", 10)
         .attr("r", size)
-        .attr("transform", function(d) { 
+        .attr("transform", function(d) {
             scaling_factor = d[1];
             transform_factor = -(10 * scaling_factor - 1)
 
             // Translates and scales the circles so that they're concentric
             translate = "translate(" + transform_factor + "," + transform_factor + ")";
-            scale =  "scale(" + d[1]+ ")"; 
+            scale =  "scale(" + d[1]+ ")";
 
-            return translate + " " +  scale 
+            return translate + " " +  scale
         })
         .attr("fill", function(d) { return d[0]});
         //return d3.hsl(d[0], 1, 0.5) });
@@ -263,7 +264,7 @@ function drawNation(){
 $(function() {
     // First we load all the data and do all the things we need the data for (chart drawing) in the callback
     loadData(function() {
-        
+
         month = 1
         // This is the first display
         displayReferenceChart("boston", month, false);
@@ -283,20 +284,20 @@ $(function() {
             addReferencePieChart("boston", month)
 
             circle.transition()
-                .attr("transform", function(d) { 
+                .attr("transform", function(d) {
                     scaling_factor = d[1];
                     transform_factor = -(10 * scaling_factor - 1)
                     // Translates and scales the circles so that they're concentric
                     translate = "translate(" + transform_factor + "," + transform_factor + ")";
-                    scale =  "scale(" + d[1]+ ")"; 
+                    scale =  "scale(" + d[1]+ ")";
                     return translate + " " +  scale
                 }).attr("fill", function(d) { return d[0]});
                 //return d3.hsl(d[0], 1, 0.5) });
 
-            d3.selectAll("#month_label").text(monthNames[month - 1]);   
+            d3.selectAll("#month_label").text(monthNames[month - 1]);
 
             month++;
-        }, updateDelay);   
+        }, updateDelay);
 
         for (var mo=1; mo<13; mo++){
             displayReferenceChart("boston", mo, true);
