@@ -43,6 +43,9 @@ h1, h2 {
 
 	<div id="wrapper">
 		<h1 id="cityTitle"></h1>
+		<div id="controls">
+			<input type="button" id="animate" value="Animate"></input>
+		</div>
 		<div id="viztest">
 
     		<div id="reference">
@@ -70,6 +73,7 @@ h1, h2 {
 		// Constants
 		var city;
 		var cities = ["boston", "chicago", "dc", "houston", "la", "minneapolis", "seattle"]
+		var cityTitles = ["Boston", "Chicago", "Washington, D.C.", "Los Angeles", "Minneapolis", "Seattle"]
 		var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
 		var refHueNames = [ "Red", "Red-Yellows", "Yellows", "Yellow-Greens", "Greens", 
@@ -254,7 +258,7 @@ h1, h2 {
 
 		}
 
-		function updateReferenceChart(city, month, div) {
+		function updateAggregateChart(city, month, div) {
 		    hue_data = getMonthData(city, month);
 
 		    // variables for the full aggregate data viz
@@ -331,12 +335,21 @@ h1, h2 {
 		    console.log('Query variable %s not found', variable);
 		}
 
+		function addAnimateHandler() {
+			$("#animate").click(function() {
+				text =  $(this).attr("value") == "Animate" ? "Pause" : "Animate";
+				$(this).attr("value", text);
+				animate = !animate;
+			});
+		};
+
 		city = getQueryVariable("city");
+		var animate = false;
 
 		$(function() {
-			title = city[0].toUpperCase() + city.substring(1);
-			$("#cityTitle").text(title);
-		    // First we load all the data and do all the things we need the data for (chart drawing) in the callback
+			$("#cityTitle").text(cityTitles[cities.indexOf(city)]);
+			addAnimateHandler();
+
 		    loadData(function() {
 		        month = 1
 
@@ -347,13 +360,14 @@ h1, h2 {
 
 		        updateDelay = 1000
 		        setInterval(function() {
-		            month = month > 12 ? 1 : month;
-		            new_data = getMonthData(city, month);
-		            addReferencePieChart(city, month);
+		        	if (animate) {
+			            month = month > 12 ? 1 : month;
+			            new_data = getMonthData(city, month);
+			            addReferencePieChart(city, month);
+			            updateAggregateChart(city, month)  
 
-		            updateReferenceChart(city, month)  // FULL SIZE VERSION
-
-		            month++;
+			            month++;		        		
+		        	}
 		        }, updateDelay);   
 
 		     });
