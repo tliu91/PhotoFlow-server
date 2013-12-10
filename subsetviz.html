@@ -27,10 +27,12 @@ body {
 #minndataviz{left:450px; top:20px;}
 #seattledataviz{left:100px; top:-25px;}
 
-#viztest{overflow:hidden;}
+#viztest{overflow:hidden;position:relative;}
 #reference{width: 600px; height:600px;float:left; overflow:hidden;}
 #dataviztest{width: 600px; height:600px; float:left; overflow:hidden;}
 
+.monthviz{overflow:hidden; float:left;width:150px;height:150px;}
+#months{overflow:hidden;float:left;}
 
 </style>
 </head>
@@ -48,6 +50,22 @@ body {
     <div id="dataviztest">
         <h2>Full Aggregate</h1>
     </div>
+
+    <div id="months">
+        <div id="viz1" class="monthviz"></div>
+        <div id="viz2" class="monthviz"></div>
+        <div id="viz3" class="monthviz"></div>
+        <div id="viz4" class="monthviz"></div>
+        <div id="viz5" class="monthviz"></div>
+        <div id="viz6" class="monthviz"></div>
+        <div id="viz7" class="monthviz"></div>
+        <div id="viz8" class="monthviz"></div>
+        <div id="viz9" class="monthviz"></div>
+        <div id="viz10" class="monthviz"></div>
+        <div id="viz11" class="monthviz"></div>
+        <div id="viz12" class="monthviz"></div>
+    </div>
+
 </div>
 
 
@@ -135,14 +153,19 @@ function getMonthData(city, month) {
 };
 
 // visualize full aggregated data
-function displayReferenceChart(city, month) {
+function displayReferenceChart(city, month, sep_div) {
     hue_data = getMonthData(city, month);
 
     // variables for the full aggregate data viz
-
     var putdiv = "#dataviztest"
     var size = 100;
     loc = [200,200];
+
+    if (sep_div){
+        putdiv = "#viz" + month;
+        size = 50
+        loc = [60,60]
+    }
 
     var svg = d3.select(putdiv).append("svg")
         .attr("width", 600)
@@ -154,6 +177,12 @@ function displayReferenceChart(city, month) {
         .attr("transform", "translate(" + loc + ")"); // change this to move position of circles within div
 
     g.append("circle")
+        .attr("id", function(d){
+            if (sep_div){
+                return "circle_nonani";
+            }
+            return "circle";
+        })
         .attr("cx", 10)
         .attr("cy", 10)
         .attr("r", size)
@@ -170,8 +199,14 @@ function displayReferenceChart(city, month) {
         .attr("fill", function(d) { return d[0]});
         //return d3.hsl(d[0], 1, 0.5) });
 
-    svg.append("text").attr("id", "month_label")
-        .attr("x", 175).attr("y", 75)
+    svg.append("text")
+        .attr("id", function(d){
+            if (sep_div){
+                return "month_label_nonani"
+            }
+            return "month_label"
+        })
+        .attr("x", 10).attr("y", 10)
         .text(monthNames[month - 1])
 
 };
@@ -231,7 +266,7 @@ $(function() {
         
         month = 1
         // This is the first display
-        displayReferenceChart("boston", month);
+        displayReferenceChart("boston", month, false);
         addReferencePieChart("boston", month)
 
         //displayReferenceChart("seattle", month);
@@ -244,7 +279,7 @@ $(function() {
         setInterval(function() {
             month = month > 12 ? 1 : month;
             new_data = getMonthData("boston", month);
-            circle = d3.selectAll("circle").data(new_data);
+            circle = d3.selectAll("#circle").data(new_data);
             addReferencePieChart("boston", month)
 
             circle.transition()
@@ -263,6 +298,9 @@ $(function() {
             month++;
         }, updateDelay);   
 
+        for (var mo=1; mo<13; mo++){
+            displayReferenceChart("boston", mo, true);
+        }
     });
 
 });

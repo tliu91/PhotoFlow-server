@@ -10,6 +10,11 @@
 <script src="nv.d3.min.js"></script>
 <link href="nv.d3.css" rel="stylesheet" type="text/css">
 
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css">
+
 <style>
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -17,15 +22,17 @@ body {
 }
 
 .cityviz{width:150px; height:150px; float:left; position:absolute;}
-#wrapper{width:1500;overflow: hidden;position:relative;}
-#nation{width:1000px; height:700px; float:left; fill:#ccc; position: relative; z-index:-1;}
+#wrapper{width:1500;overflow: hidden;position:relative; margin:0 auto;}
+#nation{width:1000px; height:600px; float:left; fill:#ccc; position: relative; z-index:-1; margin: 0 auto;}
 #bostondataviz{left: 700px; top: 100px;}
 #chicagodataviz{left:550px; top:100px;}
 #dcdataviz{left:700px; top:200px;}
 #houstondataviz{left:400px; top:300px;}
 #ladataviz{left:100px; top:180px;}
 #minneapolisdataviz{left:450px; top:20px;}
-#seattledataviz{left:100px; top:-25px;}
+#seattledataviz{left:100px; top:-15px;}
+
+.button{}
 
 #viztest{overflow:hidden;}
 #reference{width: 600px; height:600px;float:left; overflow:hidden;}
@@ -77,6 +84,10 @@ body {
     <div id="seattledataviz" class="cityviz">
         <p>Seattle</p>
     </div>
+</div>
+
+<div id="button-wrapper">
+    <button>January</button>
 </div>
 
 <div id="viztest">
@@ -301,7 +312,7 @@ function updateReferenceChart(city, month, div) {
     }
     
     var selector = putdiv + " svg circle"
-    console.log(selector)
+    //console.log(selector)
     var circle = d3.selectAll(selector).data(hue_data)
 
     circle.transition()
@@ -347,50 +358,6 @@ function addReferencePieChart(city, month) {
 
 
 
-
-// ----------- Entry point ----------
-$(function() {
-    // First we load all the data and do all the things we need the data for (chart drawing) in the callback
-    loadData(function() {
-        drawNation();
-        month = 1
-        // This is the first display
-        drawAggregateChart("boston", month, 20);
-        addReferencePieChart("boston", month)
-
-        //displayReferenceChart("seattle", month);
-        /*for (var city in cities){
-            displayReferenceChart(cities[city], month);
-        }*/
-
-        updateDelay = 2000
-        // then it updates every updateDelay ms
-        setInterval(function() {
-            month = month > 12 ? 1 : month;
-            new_data = getMonthData("boston", month);
-            addReferencePieChart("boston", month);
-
-            updateReferenceChart("boston", month)  // FULL SIZE VERSION
-            _.each(cities, function(city, index) {
-                console.log(city, index)
-                updateReferenceChart(city, month, index);
-            });
-
-            month++;
-        }, updateDelay);   
-
-        displayTempLine("boston", 1)
-     });
-
-    
-
-});
-
-
-
-
-
-
 // nation visualization
 function drawNation(){
     var path = d3.geo.path();
@@ -408,6 +375,46 @@ function drawNation(){
         drawAggregateChart(cities[city], 1, city);
     }
 };
+
+
+
+
+// ----------- Entry point ----------
+$(function() {
+    // First we load all the data and do all the things we need the data for (chart drawing) in the callback
+    loadData(function() {
+        drawNation();
+        month = 1
+        // This is the first display
+        drawAggregateChart("boston", month, 20);
+        addReferencePieChart("boston", month)
+
+        /*
+        updateDelay = 2000
+        // then it updates every updateDelay ms
+        setInterval(function() {*/
+            month = month > 12 ? 1 : month;
+            new_data = getMonthData("boston", month);
+            addReferencePieChart("boston", month);
+
+            updateReferenceChart("boston", month)  // FULL SIZE VERSION
+        /*    _.each(cities, function(city, index) {
+                //console.log(city, index)
+                updateReferenceChart(city, month, index);
+            });
+
+            month++;
+        }, updateDelay);  */ 
+
+        displayTempLine("boston", 1)
+     });
+
+    
+
+});
+
+
+
 
 
 </script>
