@@ -184,7 +184,7 @@ h1, h2 {
 		        x: function(d,i) { return i},
 		        showXAxis: true,
 		        showYAxis: true,
-		        transitionDuration: 250
+		        transitionDuration: 250, 
 		    })
 		    ;
 
@@ -195,7 +195,7 @@ h1, h2 {
 
 		        chart1.yAxis
 		            .axisLabel('Temp')
-		            .tickFormat(d3.format('d'))
+		            .tickFormat(function(d) {return d3.format('d')(d) + "F"; })
 		        ;
 
 		        d3.select('#chart svg')
