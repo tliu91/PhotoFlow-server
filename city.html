@@ -62,9 +62,29 @@ h1, h2, h3, h4 {
 		<h1 id="cityTitle"></h1>
 		<div id="controls" class="row">
 			<h2> <small>Press animate to see how colors change over the months.</small> </h2>
-			<h2> <small>Double-click on a month in the temperature graph to view the colors for that month</small></h2>
+			<h2> <small>Double-click on a month in the temperature graph to view the colors for that month.</small></h2>
 			<input type="button" id="animate" value="Animate" class=" col-md-offset-1 btn btn-success"></input>
 			<input type="button" id="reset" value="Reset" class="btn btn-danger"></input>
+
+			<div class="btn-group col-md-offset-5" data-toggle="buttons">
+			  	<label class="btn btn-primary active">
+			    	<input type="radio" name="satOptions" value=true> 75% Saturation
+			  	</label>
+			  	<label class="btn btn-primary">
+			    	<input type="radio" name="satOptions" value=false> Average Saturation
+			  	</label>
+			</div>
+
+			<div class="btn-group col-md-offset" data-toggle="buttons">
+			  	<label class="btn btn-primary active">
+			    	<input type="radio" name="lightOptions" value=true> 50% Light
+			  	</label>
+			  	<label class="btn btn-primary">
+			    	<input type="radio" name="lightOptions" value=false> Average Light
+			  	</label>
+			</div>
+
+
 		</div>
 
 		<h2 id="month_label" class="row"></h2>
@@ -163,7 +183,11 @@ h1, h2, h3, h4 {
 		    for (var hue in aggregate.hues){
 		        var avg_light = aggregate["hues"][hue]["total_light"] / aggregate["hues"][hue]["count"];
 		        var avg_sat = aggregate["hues"][hue]["total_sat"] / aggregate["hues"][hue]["count"];
-		        var avg_hue = d3.hsl(hue, 0.75, 0.5);
+		        
+		        sat = defaultSat == true ? 0.75 : avg_sat;
+		        light = defaultLight == true ? 0.5 : avg_light;
+
+		        var avg_hue = d3.hsl(hue, sat, light);
 		        agg_hue_data.push([avg_hue, 1 - agg_hue_perc]);
 		        agg_hue_perc += aggregate.hues[hue]["percentage"];
 		    };
@@ -384,11 +408,27 @@ h1, h2, h3, h4 {
 		city = getQueryVariable("city");
 		var animate = false;
 		var month = 1
+		var defaultSat = true; 
+		var defaultLight = true;
+
 
 		$(function() {
 			$("title").text("Colors of " + cityTitles[cities.indexOf(city)])
 			$("#cityTitle").text("Colors of " + cityTitles[cities.indexOf(city)]);
 			$("#month_label").text(monthNames[month-1])
+
+			$("input[name='satOptions']").change(function() {
+				value = $(this).val();
+				defaultSat = (value === 'true')
+				setMonth(month);
+			});
+
+			$("input[name='lightOptions']").change(function() {
+				value = $(this).val();
+				defaultLight = (value === 'true')
+				setMonth(month);
+			});
+
 			addAnimateHandler();
 			addResetHandler();
 
