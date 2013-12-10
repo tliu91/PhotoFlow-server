@@ -2,12 +2,20 @@
 <html>
 
 <head>
-<title>Visualization of shit</title>
+<title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="underscore-min.js"></script>
 <script src="nv.d3.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="nv.d3.css" rel="stylesheet" type="text/css">
 
 <style>
@@ -16,9 +24,8 @@ body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-#wrapper{width:1500; overflow: hidden;position:relative;}
 #viztest{overflow:hidden;}
-#reference{width: 600px; height:600px;float:left; overflow:hidden;}
+#reference{width: 400px; height:600px;float:left; overflow:hidden;}
 #dataviztest{width: 400px; height:600px; float:left; overflow:hidden;}
 
 #chart {
@@ -27,15 +34,20 @@ body {
 
 #chart svg {
   height: 500px;
-  width: 400px;
+  width: 600px;
 }
 
-h1, h2 {
+h1, h2, h3, h4 { 
   text-align: center;
 }
 
 #month_label {;
 	text-align: center;
+}
+
+
+.container {
+	width: 1400px; 
 }
 
 
@@ -45,28 +57,33 @@ h1, h2 {
 
 <body>
 
-	<div id="wrapper">
-		<h1 id="cityTitle"></h1>
-		<div id="controls">
-			<input type="button" id="animate" value="Animate"></input>
-			<input type="button" id="reset" value="Reset"></input>
-			<h2 id="month_label"></h2>
-		</div>
-		<div id="viztest">
+	<div id="wrapper" class="container">
 
-    		<div id="reference">
-        		<h3>Reference Hues</h3>
+		<h1 id="cityTitle"></h1>
+		<div id="controls" class="row">
+			<h2> <small>Press animate to see how colors change over the months.</small> </h2>
+			<h2> <small>Double-click on a month in the temperature graph to view the colors for that month</small></h2>
+			<input type="button" id="animate" value="Animate" class=" col-md-offset-1 btn btn-success"></input>
+			<input type="button" id="reset" value="Reset" class="btn btn-danger"></input>
+		</div>
+
+		<h2 id="month_label" class="row"></h2>
+
+		<div id="viztest" class="row">
+
+    		<div id="reference" class="col-md-4">
+        		<h4>Reference Hues</h3>
 	        	<svg id="test2" class="mypiechart"></svg>
 	    	</div>
 
 	    
-		    <div id="dataviztest">
-		        <h3>Full Aggregate</h3>
+		    <div id="dataviztest" class="col-md-4">
+		        <h4>Full Aggregate</h3>
 		    </div>
 
 
-		    <div id="chart" >
-		    	<h3> Temperature </h3>
+		    <div id="chart">
+		    	<h4> Temperature </h3>
 		        <svg></svg>
 		    </div>
 
@@ -181,7 +198,7 @@ h1, h2 {
 		    nv.addGraph(function() {
 		        chart1 = nv.models.lineChart()
 		        .options({
-		        margin: {left: 100, bottom: 100},
+		        margin: {left: 50},
 		        x: function(d,i) { return i},
 		        showXAxis: true,
 		        showYAxis: true,
@@ -224,7 +241,7 @@ h1, h2 {
 		    // variables for the full aggregate data viz
 		    var putdiv = "#dataviztest"
 		    var size = 150;
-		    loc = [150,230];
+		    loc = [190,240];
 
 		    // variables for the smaller aggregate data viz on map
 		    if (div < 7){
@@ -240,7 +257,7 @@ h1, h2 {
 		        
 		    }
 		    var svg = d3.select(putdiv).append("svg")
-		        .attr("width", 600)
+		        .attr("width", 400)
 		        .attr("height", 600)
 		        .on("click", function() {
 		            window.location.href = "city.html?city=" + city
@@ -308,7 +325,7 @@ h1, h2 {
 		// Creates pie chart
 		function addReferencePieChart(city, month) {
 		    nv.addGraph(function() {
-		        var width = 500,
+		        var width = 400,
 		            height = 500;
 
 		        ref_data = getRefMonthData("boston", month);
@@ -369,7 +386,8 @@ h1, h2 {
 		var month = 1
 
 		$(function() {
-			$("#cityTitle").text(cityTitles[cities.indexOf(city)]);
+			$("title").text("Colors of " + cityTitles[cities.indexOf(city)])
+			$("#cityTitle").text("Colors of " + cityTitles[cities.indexOf(city)]);
 			$("#month_label").text(monthNames[month-1])
 			addAnimateHandler();
 			addResetHandler();
